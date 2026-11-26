@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base de Datos de Órdenes - Visor, Telco, Atlas y SAM</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a24">
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -471,52 +473,62 @@
         let limpio = raw;
 
         if (/Content-Type:\s*multipart\/related/i.test(limpio)) {
-            const matchHtml = limpio.match(/Content-Type:\s*text\/html[\s\S]*?\r?\n\r?\n([\s\S]*?)(?:\r?\n------MultipartBoundary|$)/i);
+            const matchHtml = limpio.match(/Content-Type:\s*text\/html[\s\S]*??
+?
+([\s\S]*?)(?:?
+------MultipartBoundary|$)/i);
             if (matchHtml && matchHtml[1]) {
                 limpio = matchHtml[1];
             }
         }
-        limpio = limpio.replace(/=\r?\n/g, '').replace(/=3D/gi, '=');
+        limpio = limpio.replace(/=?
+/g, '').replace(/=3D/gi, '=');
 
         if (/<(table|tr|td|th|font|body|html|a|br)/i.test(limpio)) {
             const temp = document.createElement('div');
             temp.innerHTML = limpio;
 
-            temp.querySelectorAll('br').forEach(br => br.replaceWith(document.createTextNode('\n')));
+            temp.querySelectorAll('br').forEach(br => br.replaceWith(document.createTextNode('
+')));
 
             temp.querySelectorAll('tr').forEach(tr => {
                 const celdas = Array.from(tr.querySelectorAll(':scope > td, :scope > th'))
                     .map(c => c.innerText.replace(/\s+/g, ' ').trim());
                 if (celdas.length > 0) {
-                    tr.before(document.createTextNode(celdas.join(' \t ') + '\n'));
+                    tr.before(document.createTextNode(celdas.join(' 	 ') + '
+'));
                 }
                 tr.remove();
             });
 
             temp.querySelectorAll('caption').forEach(cap => {
-                cap.before(document.createTextNode('\n' + cap.innerText.trim() + '\n'));
+                cap.before(document.createTextNode('
+' + cap.innerText.trim() + '
+'));
                 cap.remove();
             });
 
             return (temp.innerText || temp.textContent || '')
-                .replace(/\u00a0/g, ' ')
-                .replace(/\r/g, '')
-                .split('\n')
+                .replace(/ /g, ' ')
+                .replace(//g, '')
+                .split('
+')
                 .map(l => l.trim())
                 .filter(l => l.length > 0);
         }
 
         return limpio
-            .replace(/\u00a0/g, ' ')
-            .replace(/\r/g, '')
-            .split('\n')
+            .replace(/ /g, ' ')
+            .replace(//g, '')
+            .split('
+')
             .map(l => l.trim())
             .filter(l => l.length > 0);
     }
 
     function extraerCampoEtiqueta(lineas, etiqueta) {
-        const esc = etiqueta.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const re = new RegExp(`\\b${esc}\\s+(.+?)(?=\\s+(?:Teléfono|LE|Central|Clase|Año|Id\\.Orden\\.\\s*Prov|Orden|Solicitud|Área|Negocio|F\\.\\s*Formulación|F\\.\\s*Entrada|F\\.\\s*efectividad|F\\.\\s*Interes|Entidad|Horas\\s*Prev\\.|Titular|Traba\\.relacionado|Domicilio|Observa|Tel\\.Contacto|Segmento|Subsegmento|N\\.I\\.F\\.|Contrata|Instalador|F\\.\\s*Entrega|F\\.\\s*Conexión|Nro\\.\\s*Prueba|Contacto\\s*concert\\.|Fecha|Tel\\s*concert\\.|Observaciones\\s*concert)\\b|$)`, 'i');
+        const esc = etiqueta.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+        const re = new RegExp(`\b${esc}\s+(.+?)(?=\s+(?:Teléfono|LE|Central|Clase|Año|Id\.Orden\.\s*Prov|Orden|Solicitud|Área|Negocio|F\.\s*Formulación|F\.\s*Entrada|F\.\s*efectividad|F\.\s*Interes|Entidad|Horas\s*Prev\.|Titular|Traba\.relacionado|Domicilio|Observa|Tel\.Contacto|Segmento|Subsegmento|N\.I\.F\.|Contrata|Instalador|F\.\s*Entrega|F\.\s*Conexión|Nro\.\s*Prueba|Contacto\s*concert\.|Fecha|Tel\s*concert\.|Observaciones\s*concert)\b|$)`, 'i');
 
         for (const linea of lineas) {
             const m = linea.match(re);
@@ -528,15 +540,15 @@
     }
 
     function esBoletinSam(rawTexto, lineas) {
-        if (/\bId\.\s*Aver[ií]a\b/i.test(rawTexto)) return true;
-        if (/\bF\.Reclamaci[oó]n\b/i.test(rawTexto) && /\bDATOS\s+PRUEBA\b/i.test(rawTexto)) return true;
-        if (lineas.some(l => /^(Id\.\s*Aver[ií]a|DATOS\s+PRUEBA|OBSERVACIONES\s+PRUEBA|DATOS\s+AVER[IÍ]A|TRAZADO\s+ADSL)\b/i.test(l))) return true;
+        if (/Id\.\s*Aver[ií]a/i.test(rawTexto)) return true;
+        if (/F\.Reclamaci[oó]n/i.test(rawTexto) && /DATOS\s+PRUEBA/i.test(rawTexto)) return true;
+        if (lineas.some(l => /^(Id\.\s*Aver[ií]a|DATOS\s+PRUEBA|OBSERVACIONES\s+PRUEBA|DATOS\s+AVER[IÍ]A|TRAZADO\s+ADSL)/i.test(l))) return true;
         return false;
     }
 
     function esBoletinTelco(rawTexto, lineas) {
         if (/Boletin\s+ORDEN\s+DE\s+TRABAJO\s+TELCO/i.test(rawTexto)) return true;
-        if (/\bOrden de trabajo\s*:/i.test(rawTexto) && /\bCodigo tarea\s*:/i.test(rawTexto)) return true;
+        if (/Orden de trabajo\s*:/i.test(rawTexto) && /Codigo tarea\s*:/i.test(rawTexto)) return true;
         if (lineas.some(l => /^(Orden de trabajo|Codigo tarea|Customer Order|Telefono alta)\s*:/i.test(l))) return true;
         return false;
     }
@@ -564,19 +576,20 @@
 
     function parsearAveriaSam(rawTexto) {
         const lineas = normalizarEntrada(rawTexto);
-        const textoPlano = lineas.join('\n');
+        const textoPlano = lineas.join('
+');
 
         const matchInlineField = (etq) => {
-            const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const m = textoPlano.match(new RegExp(`(?:^|[\\n\\t])\\s*${esc}\\s*:?\\s*(.+?)(?=(?:\\s*\\t\\s*|\\s*\\n|$))`, 'i'));
+            const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+            const m = textoPlano.match(new RegExp(`(?:^|[\n\t])\s*${esc}\s*:?\s*(.+?)(?=(?:\s*\t\s*|\s*\n|$))`, 'i'));
             return m ? m[1].replace(/\s+/g, ' ').trim() : '';
         };
 
         const idAveria = matchInlineField('Id. Avería') || matchInlineField('Id. Averia');
-        const tel = (textoPlano.match(/\bTEL\s*:\s*([0-9+\s]+)/i) || [])[1]?.trim() || '';
-        const central = (textoPlano.match(/\bCENTRAL\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
-        const seg = (textoPlano.match(/\bSEG\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
-        const dniCif = (textoPlano.match(/\bDNI\/CIF\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+        const tel = (textoPlano.match(/TEL\s*:\s*([0-9+\s]+)/i) || [])[1]?.trim() || '';
+        const central = (textoPlano.match(/CENTRAL\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+        const seg = (textoPlano.match(/SEG\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+        const dniCif = (textoPlano.match(/DNI\/CIF\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
 
         const fReclamacion = matchInlineField('F.Reclamación') || matchInlineField('F. Reclamación');
         const fEntrada = matchInlineField('F.Entrada') || matchInlineField('F. Entrada');
@@ -601,19 +614,31 @@
         const nombreCliente = domicilioLineas[0] || '';
         const domicilioPostal = domicilioLineas.join(' · ');
 
-        const sintoma = (textoPlano.match(/S[ií]ntoma\s*:\s*(.+?)(?=\n|Observaciones de Cliente\s*:|REPU\s*:|Diagn[oó]stico\s*:|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
-        const obsCliente = (textoPlano.match(/Observaciones de Cliente\s*:\s*(.+?)(?=\n\s*REPU\s*:|\n\s*Diagn[oó]stico\s*:|\n\s*SSD\s*:|\n\s*OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
-        const repu = (textoPlano.match(/\bREPU\s*:\s*(.+?)(?=\t|\n|Diagn[oó]stico\s*:|SSD\s*:|$)/i) || [])[1]?.trim() || '';
-        const diagnostico = (textoPlano.match(/Diagn[oó]stico\s*:\s*(.+?)(?=\t|\n|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
-        const ssd = (textoPlano.match(/\bSSD\s*:\s*([0-9A-Za-z._-]+)/i) || [])[1]?.trim() || '';
-        const obsPrueba = (textoPlano.match(/OBSERVACIONES\s+PRUEBA\s*:?\s*(.+?)(?=\n\s*Log[ií]stica\b|\n\s*[X]{4,}|\n\s*[ÚU]LTIMA\s+NOTA|\n\s*DATOS\s+CONTACTO|\n\s*DATOS\s+AVER[IÍ]A|$)/is) || [])[1]?.replace(/\s+/g, ' ').trim() || '';
+        const sintoma = (textoPlano.match(/S[ií]ntoma\s*:\s*(.+?)(?=
+|Observaciones de Cliente\s*:|REPU\s*:|Diagn[oó]stico\s*:|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const obsCliente = (textoPlano.match(/Observaciones de Cliente\s*:\s*(.+?)(?=
+\s*REPU\s*:|
+\s*Diagn[oó]stico\s*:|
+\s*SSD\s*:|
+\s*OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const repu = (textoPlano.match(/REPU\s*:\s*(.+?)(?=	|
+|Diagn[oó]stico\s*:|SSD\s*:|$)/i) || [])[1]?.trim() || '';
+        const diagnostico = (textoPlano.match(/Diagn[oó]stico\s*:\s*(.+?)(?=	|
+|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const ssd = (textoPlano.match(/SSD\s*:\s*([0-9A-Za-z._-]+)/i) || [])[1]?.trim() || '';
+        const obsPrueba = (textoPlano.match(/OBSERVACIONES\s+PRUEBA\s*:?\s*(.+?)(?=
+\s*Log[ií]stica|
+\s*[X]{4,}|
+\s*[ÚU]LTIMA\s+NOTA|
+\s*DATOS\s+CONTACTO|
+\s*DATOS\s+AVER[IÍ]A|$)/is) || [])[1]?.replace(/\s+/g, ' ').trim() || '';
 
         const logistica = [];
         for (let i = 0; i < lineas.length; i++) {
             const l = lineas[i];
-            if (/^Log[ií]stica\b/i.test(l) && /Contratable/i.test(l)) continue;
-            if (/^([X*]{4,8}|[0-9]{4,8})\s+\t\s*([0-9]+)\s+\t\s*(\[[^\]]+\][^\t]*)\s+\t\s*(\[[^\]]+\][^\t]*)\s+\t\s*([0-9]+)$/i.test(l)) {
-                const p = l.split(/\s*\t+\s*/);
+            if (/^Log[ií]stica/i.test(l) && /Contratable/i.test(l)) continue;
+            if (/^([X*]{4,8}|[0-9]{4,8})\s+	\s*([0-9]+)\s+	\s*(\[[^\]]+\][^	]*)\s+	\s*(\[[^\]]+\][^	]*)\s+	\s*([0-9]+)$/i.test(l)) {
+                const p = l.split(/\s*	+\s*/);
                 logistica.push({
                     codigo: p[0],
                     ps: p[1],
@@ -634,12 +659,12 @@
         ];
 
         lineas.forEach(l => {
-            const partes = l.split(/\s*\t+\s*/).filter(Boolean);
+            const partes = l.split(/\s*	+\s*/).filter(Boolean);
             for (let idx = 0; idx < partes.length; idx++) {
                 const segPart = partes[idx];
                 for (const etq of etiquetasSam) {
-                    const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const m = segPart.match(new RegExp(`^${esc}\\s*:?\\s*(.*)$`, 'i'));
+                    const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+                    const m = segPart.match(new RegExp(`^${esc}\s*:?\s*(.*)$`, 'i'));
                     if (m) {
                         let val = (m[1] || '').trim();
                         if (!val && idx + 1 < partes.length) {
@@ -764,7 +789,7 @@
             /^(Informe de actuaciones|Datos generales|Datos orden|Datos circuito|Datos cliente|Datos actuación|Datos rpv\/sede|Datos Centrex Grupo IP|Datos Centrex Sede IP|Datos Centrex Extensiones|Datos Oficina Integral|Datos Oficina Conectada|Datos Rai|Datos Ruta|Datos LMDS|Datos NOTA DATINT|Datos Proyectos A Medida|Datos Trazado Lógico|Circuitos orden|Trazado circuitos|Equipos|Catálogo tarjetas|Datos Ditra|Facilid\. Cable|Facilid\. Grupo|Terminales|Equipos de abonado|Notas|Datos Notas|Ver Datos Portico|ACTUACIONES ORDEN CIRCUITO PRIVADO - Datos Atlas)$/i.test(txt);
 
         const esEtiquetaConocida = (txt) =>
-            etiquetasAtlas.some(e => new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s*:)?$`, 'i').test(txt));
+            etiquetasAtlas.some(e => new RegExp(`^${e.replace(/[.*+?^${}()|[\]\]/g, '\$&')}(\s*:)?$`, 'i').test(txt));
 
         const extraerValorSiguiente = (startIdx) => {
             for (let j = startIdx; j < lineas.length; j++) {
@@ -780,13 +805,13 @@
             const linea = lineas[i];
             if (!linea || linea === '|') continue;
 
-            if (linea.includes('\t')) {
-                const celdas = linea.split(/\s*\t+\s*/).map(c => c.trim()).filter(Boolean);
+            if (linea.includes('	')) {
+                const celdas = linea.split(/\s*	+\s*/).map(c => c.trim()).filter(Boolean);
                 for (let c = 0; c < celdas.length; c++) {
                     const celda = celdas[c];
                     for (const etq of etiquetasAtlas) {
-                        const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        const mCell = celda.match(new RegExp(`^${esc}\\s*:?\\s*(.*)$`, 'i'));
+                        const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+                        const mCell = celda.match(new RegExp(`^${esc}\s*:?\s*(.*)$`, 'i'));
                         if (mCell) {
                             let valCelda = (mCell[1] || '').trim();
                             if (!valCelda && c + 1 < celdas.length && !esEtiquetaConocida(celdas[c + 1])) {
@@ -834,8 +859,8 @@
             let inlineVal = '';
 
             for (const etq of etiquetasAtlas) {
-                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const mColon = linea.match(new RegExp(`^${esc}\\s*:\\s*(.*)$`, 'i'));
+                const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+                const mColon = linea.match(new RegExp(`^${esc}\s*:\s*(.*)$`, 'i'));
                 if (mColon) {
                     matchedEtq = etq;
                     inlineVal = (mColon[1] || '').trim();
@@ -918,13 +943,16 @@
             }
         }
 
-        const textoNorm = lineas.join('\n');
+        const textoNorm = lineas.join('
+');
         if (!campos['N° Orden']) {
-            const mOrd = textoNorm.match(/(?:N°\s*Orden|Número de orden)\s*:?\s*\n?\s*([0-9]{6,})/i);
+            const mOrd = textoNorm.match(/(?:N°\s*Orden|Número de orden)\s*:?\s*
+?\s*([0-9]{6,})/i);
             if (mOrd) campos['N° Orden'] = mOrd[1].trim();
         }
         if (!campos['N° Admtvo']) {
-            const mAdm = textoNorm.match(/N°\s*Admtvo\s*:?\s*\n?\s*([0-9]{8,})/i);
+            const mAdm = textoNorm.match(/N°\s*Admtvo\s*:?\s*
+?\s*([0-9]{8,})/i);
             if (mAdm) campos['N° Admtvo'] = mAdm[1].trim();
         }
 
@@ -949,7 +977,7 @@
                 }
             } else {
                 const posiblesDirs = valoresCli.filter(v =>
-                    /^(AV|AVDA|CL|CALLE|PZ|PLAZA|CR|CTRA|COMPAS|PG|POL|TR|TRAV|RD|RONDA|PS|PASEO|CM|CAMINO)\b/i.test(v) ||
+                    /^(AV|AVDA|CL|CALLE|PZ|PLAZA|CR|CTRA|COMPAS|PG|POL|TR|TRAV|RD|RONDA|PS|PASEO|CM|CAMINO)/i.test(v) ||
                     /,\s*\d+/.test(v)
                 );
                 if (!campos['Dire. Origen del cliente'] && posiblesDirs[0]) {
@@ -1049,7 +1077,7 @@
                 const limp = linea.replace(/^\|\s*/, '').replace(/\s*\|\s*$/, '').trim();
                 if (!limp) continue;
 
-                const partesPipe = limp.split(/\s*\|\s*|\s*\t+\s*/).filter(Boolean);
+                const partesPipe = limp.split(/\s*\|\s*|\s*	+\s*/).filter(Boolean);
                 if (partesPipe.length >= 2) {
                     const nombreActivo = partesPipe[0].trim();
                     const resto = partesPipe.slice(1).join(' ').trim();
@@ -1080,7 +1108,7 @@
 
             if (seccionActual === 'TRAZADO') {
                 if (/^Recurso Especificador Categoria Valor$/i.test(linea)) continue;
-                const partes = linea.split(/\s*\|\s*|\s*\t+\s*/).filter(Boolean);
+                const partes = linea.split(/\s*\|\s*|\s*	+\s*/).filter(Boolean);
                 if (partes.length >= 2) {
                     trazado.push({
                         recurso: partes[0] || '',
@@ -1098,8 +1126,8 @@
             let inlineVal = '';
 
             for (const etq of etiquetasConocidas) {
-                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const reColon = new RegExp(`^${esc}\\s*:\\s*(.*)$`, 'i');
+                const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+                const reColon = new RegExp(`^${esc}\s*:\s*(.*)$`, 'i');
                 const mColon = linea.match(reColon);
                 if (mColon) {
                     matchedEtq = etq;
@@ -1121,7 +1149,7 @@
                     if (j < lineas.length) {
                         const cand = lineas[j].replace(/^\|\s*/, '').trim();
                         const esOtraEtiqueta = etiquetasConocidas.some(e =>
-                            new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s*:)?$`, 'i').test(cand)
+                            new RegExp(`^${e.replace(/[.*+?^${}()|[\]\]/g, '\$&')}(\s*:)?$`, 'i').test(cand)
                         ) || /^(DATOS BASICOS|DATOS CTO|DATOS CD|ITEMS|Trazado\s*:|Datos de contacto\s*:)$/i.test(cand);
 
                         if (!esOtraEtiqueta) {
@@ -1268,9 +1296,9 @@
                 break;
             }
             if (!enSeccionEquipos) continue;
-            if (/^Op\b/i.test(linea) && /Equipo/i.test(linea) && /Material/i.test(linea)) continue;
+            if (/^Op/i.test(linea) && /Equipo/i.test(linea) && /Material/i.test(linea)) continue;
 
-            const partesTab = linea.split(/\s*\t+\s*/).filter(Boolean);
+            const partesTab = linea.split(/\s*	+\s*/).filter(Boolean);
             let op = '', codigoEquipo = '', descripcion = '', unidades = '', material = '';
 
             if (partesTab.length >= 4) {
@@ -1328,7 +1356,7 @@
             }
             if (!enSeccionClaves) continue;
 
-            if (/^Op\b/i.test(linea) && /Clave/i.test(linea) && /Datos clave/i.test(linea)) {
+            if (/^Op/i.test(linea) && /Clave/i.test(linea) && /Datos clave/i.test(linea)) {
                 continue;
             }
 
@@ -1338,7 +1366,7 @@
                     bloque: subBloqueClave,
                     op: (mClave[1] || '').trim(),
                     clave: mClave[2].replace(/\s+/g, ' ').trim(),
-                    valor: mClave[3].replace(/\s*\t+\s*/g, ' | ').trim()
+                    valor: mClave[3].replace(/\s*	+\s*/g, ' | ').trim()
                 });
                 continue;
             }
@@ -1368,7 +1396,7 @@
             }
             if (!enDatosInteres) continue;
 
-            const partesTab = linea.split(/\s*\t+\s*/).filter(Boolean);
+            const partesTab = linea.split(/\s*	+\s*/).filter(Boolean);
             if (partesTab.length >= 2) {
                 datosInteres.push({
                     campo: partesTab[0].trim(),
@@ -1378,8 +1406,8 @@
             }
 
             for (const etq of etiquetasInteres) {
-                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const re = new RegExp(`^${esc}\\s*(.*)$`, 'i');
+                const esc = etq.replace(/[.*+?^${}()|[\]\]/g, '\$&');
+                const re = new RegExp(`^${esc}\s*(.*)$`, 'i');
                 const m = linea.match(re);
                 if (m) {
                     datosInteres.push({
@@ -1907,7 +1935,8 @@
 
                 <div class="detalle-seccion">
                     <h3>Informe de actuacion</h3>
-                    <div class="raw-box">${escapeHtml((a.informeActuacion || []).join('\n') || '-')}</div>
+                    <div class="raw-box">${escapeHtml((a.informeActuacion || []).join('
+') || '-')}</div>
                 </div>
 
                 ${(a.extras && a.extras.length) ? `
@@ -2263,6 +2292,14 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
             listarOrdenes();
         }
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch((err) => {
+                console.error('Error registrando Service Worker:', err);
+            });
+        });
     }
 </script>
 </body>
