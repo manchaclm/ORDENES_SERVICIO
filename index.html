@@ -355,6 +355,9 @@
         <div class="acciones-barra">
             <button type="button" onclick="procesarOrden()">Procesar y Guardar</button>
             <button type="button" class="btn-secondary" onclick="document.getElementById('txtBruto').value = ''">Limpiar Texto</button>
+            <button type="button" class="btn-success" onclick="exportarBD()">Exportar BD</button>
+            <button type="button" class="btn-secondary" onclick="document.getElementById('inputImportarBD').click()">Importar BD</button>
+            <input type="file" id="inputImportarBD" accept=".json,application/json" style="display:none" onchange="importarBD(event)">
             <button type="button" class="btn-danger" onclick="borrarTodaLaBD()">Borrar Toda la BD</button>
         </div>
     </section>
@@ -422,6 +425,79 @@
             const mm = String(ahora.getMonth() + 1).padStart(2, '0');
             const dd = String(ahora.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function exportarBD() {
+            const db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const payload = {
+                app: 'gestor_ordenes_visor',
+                version: 1,
+                exportadoEn: new Date().toISOString(),
+                totalRegistros: db.length,
+                registros: db
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ordenes_backup_${obtenerFechaCapturaIso()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importarBD(event) {
+            const archivo = event.target.files && event.target.files[0];
+            if (!archivo) return;
+
+            const lector = new FileReader();
+            lector.onload = function (e) {
+                try {
+                    const contenido = JSON.parse(e.target.result);
+                    const entrantes = Array.isArray(contenido)
+                        ? contenido
+                        : (Array.isArray(contenido.registros) ? contenido.registros : null);
+
+                    if (!entrantes) {
+                        alert('El archivo JSON no tiene un formato de base de datos válido.');
+                        return;
+                    }
+
+                    const actual = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    const idsExistentes = new Set(actual.map(item => item && item.id).filter(Boolean));
+
+                    let agregados = 0;
+                    let omitidos = 0;
+
+                    const combinados = [...actual];
+                    entrantes.forEach(reg => {
+                        if (!reg || typeof reg !== 'object') {
+                            omitidos++;
+                            return;
+                        }
+                        if (reg.id && idsExistentes.has(reg.id)) {
+                            omitidos++;
+                            return;
+                        }
+                        if (!reg.id) {
+                            reg.id = 'IMP-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+                        }
+                        idsExistentes.add(reg.id);
+                        combinados.push(reg);
+                        agregados++;
+                    });
+
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(combinados));
+                    listarOrdenes();
+                    alert(`Importación completada: ${agregados} registro(s) nuevo(s) añadido(s), ${omitidos} duplicado(s) o no válido(s) omitido(s).`);
+                } catch (err) {
+                    alert('No se pudo leer el archivo JSON: ' + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            lector.readAsText(archivo, 'UTF-8');
         }
 
         function guardarNotaActuacion(id, textoNota, origin = 'tabla') {
