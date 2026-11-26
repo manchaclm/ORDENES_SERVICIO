@@ -7,6 +7,10 @@
     <link rel="manifest" href="./manifest.json">
     <title>Gestor de Órdenes y Averías — Visor / Telco / Atlas / SAM</title>
     <style>
+        :root {
+            --alto-celda-compacta: 165px;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -145,6 +149,12 @@
             background-color: rgba(137, 180, 250, 0.06);
         }
 
+        .celda-compacta {
+            max-height: var(--alto-celda-compacta);
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
         .badge {
             display: inline-block;
             padding: 2px 7px;
@@ -196,7 +206,7 @@
         }
 
         .claves-casilla-ampliada {
-            max-height: 180px;
+            max-height: var(--alto-celda-compacta);
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -212,6 +222,12 @@
             max-width: 300px;
         }
 
+        .nota-box-tabla {
+            max-height: calc(var(--alto-celda-compacta) + 45px);
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
         .nota-guardada-texto {
             background-color: #181825;
             border-left: 3px solid #f9e2af;
@@ -220,10 +236,13 @@
             margin-bottom: 6px;
             font-size: 0.8rem;
             white-space: pre-wrap;
+            max-height: 68px;
+            overflow-y: auto;
         }
 
         .nota-input-fila {
-            min-height: 60px;
+            min-height: 46px;
+            height: 46px;
             margin-bottom: 6px;
             font-size: 0.8rem;
         }
@@ -1532,21 +1551,21 @@
                     `;
 
                     celdasHtml = `
-                        <td>
+                        <td><div class="celda-compacta">
                             <span class="badge badge-sam">AVERÍA SAM</span><br>
                             <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                             <span class="text-small">SEG: ${escapeHtml(s.seg || '-')}</span>
-                        </td>
-                        <td>
+                        </div></td>
+                        <td><div class="celda-compacta">
                             <strong>${escapeHtml(s.nombreCliente || 'Sin cliente')}</strong><br>
                             <span class="text-small"><strong>Id. Avería:</strong> ${escapeHtml(s.idAveria || '-')}</span><br>
                             <span class="text-small"><strong>TEL:</strong> ${escapeHtml(s.tel || '-')} | <strong>Central:</strong> ${escapeHtml(s.central || '-')}</span><br>
                             <span class="text-small"><strong>DNI/CIF:</strong> ${escapeHtml(s.dniCif || '-')}</span><br>
                             <span class="text-small"><strong>Domicilio:</strong> ${escapeHtml(s.domicilioPostal || '-')}</span>
-                        </td>
-                        <td>${diagHtml}</td>
+                        </div></td>
+                        <td><div class="celda-compacta">${diagHtml}</div></td>
                         <td class="col-claves">${clavesSamHtml}</td>
-                        <td>${estadoSamHtml}</td>
+                        <td><div class="celda-compacta">${estadoSamHtml}</div></td>
                     `;
                 } else if (orden.tipo === 'atlas') {
                     const a = orden.atlas || {};
@@ -1579,22 +1598,22 @@
                     `;
 
                     celdasHtml = `
-                        <td>
+                        <td><div class="celda-compacta">
                             <span class="badge badge-atlas">ATLAS</span><br>
                             <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                             <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
-                        </td>
-                        <td>
+                        </div></td>
+                        <td><div class="celda-compacta">
                             <strong>${escapeHtml(a.cliente || 'Sin cliente')}</strong><br>
                             <span class="text-small"><strong>N° Orden:</strong> ${escapeHtml(a.numeroOrden || '-')}</span><br>
                             <span class="text-small"><strong>N° Admtvo:</strong> ${escapeHtml(a.numeroAdmtvo || '-')}</span><br>
                             <span class="text-small"><strong>Ope./Tit.:</strong> ${escapeHtml(a.opeTit || '-')}</span><br>
                             <span class="text-small"><strong>Dir. Orig:</strong> ${escapeHtml(a.dirOrigenCliente || '-')}</span><br>
                             <span class="text-small"><strong>Dir. Dest:</strong> ${escapeHtml(a.dirDestinoCliente || '-')}</span>
-                        </td>
-                        <td>${equiposAtlasHtml}</td>
+                        </div></td>
+                        <td><div class="celda-compacta">${equiposAtlasHtml}</div></td>
                         <td class="col-claves">${clavesAtlasHtml}</td>
-                        <td>${estadoNotasHtml}</td>
+                        <td><div class="celda-compacta">${estadoNotasHtml}</div></td>
                     `;
                 } else if (orden.tipo === 'telco_alta') {
                     const t = orden.telco || {};
@@ -1635,12 +1654,12 @@
                     `;
 
                     celdasHtml = `
-                        <td>
+                        <td><div class="celda-compacta">
                             <span class="badge badge-telco">TELCO ALTA</span><br>
                             <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                             <span class="text-small">${escapeHtml(t.fecha || '')}</span>
-                        </td>
-                        <td>
+                        </div></td>
+                        <td><div class="celda-compacta">
                             <strong>${escapeHtml(t.titular || 'Sin titular')}</strong><br>
                             <span class="text-small"><strong>WO:</strong> ${escapeHtml(t.woCorto || '-')}</span><br>
                             <span class="text-small"><strong>WK:</strong> ${escapeHtml(t.wkCorto || '-')}</span><br>
@@ -1648,10 +1667,10 @@
                             <span class="text-small"><strong>Central:</strong> ${escapeHtml(t.central || '-')} (${escapeHtml(t.centralNombre || '-')})</span><br>
                             <span class="text-small"><strong>Dir:</strong> ${escapeHtml(t.domicilio || '-')} (${escapeHtml(t.poblacion || '-')})</span><br>
                             <span class="text-small" style="color:#89b4fa;"><strong>CO Desc:</strong> ${escapeHtml(t.descripcionCO || '-')}</span>
-                        </td>
-                        <td>${itemsHtml}${rfsHtml}</td>
+                        </div></td>
+                        <td><div class="celda-compacta">${itemsHtml}${rfsHtml}</div></td>
                         <td class="col-claves">${clavesTelcoHtml}</td>
-                        <td>${contactoHtml}</td>
+                        <td><div class="celda-compacta">${contactoHtml}</div></td>
                     `;
                 } else {
                     const equiposHtml = (orden.equipos && orden.equipos.length)
@@ -1679,21 +1698,21 @@
                         : `<span class="text-small">Sin datos de interés</span>`;
 
                     celdasHtml = `
-                        <td>
+                        <td><div class="celda-compacta">
                             <span class="badge badge-visor">VISOR</span><br>
                             <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                             <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
-                        </td>
-                        <td>
+                        </div></td>
+                        <td><div class="celda-compacta">
                             <strong>${escapeHtml(orden.cliente.nombre || 'Sin titular')}</strong><br>
                             <span class="text-small"><strong>Orden:</strong> ${escapeHtml(orden.cliente.orden || '-')} | <strong>Central:</strong> ${escapeHtml(orden.cliente.central || '-')}</span><br>
                             <span class="text-small"><strong>Tel:</strong> ${escapeHtml(orden.cliente.telefono || '-')} | <strong>Contacto:</strong> ${escapeHtml(orden.cliente.telefonoContacto || '-')}</span><br>
                             <span class="text-small"><strong>Dir:</strong> ${escapeHtml(orden.cliente.direccion || '-')}</span><br>
                             <span class="text-small" style="color:#89b4fa;"><strong>Obs:</strong> ${escapeHtml(orden.cliente.observaciones || '-')}</span>
-                        </td>
-                        <td>${equiposHtml}</td>
+                        </div></td>
+                        <td><div class="celda-compacta">${equiposHtml}</div></td>
                         <td class="col-claves">${clavesHtml}</td>
-                        <td>${interesHtml}</td>
+                        <td><div class="celda-compacta">${interesHtml}</div></td>
                     `;
                 }
 
