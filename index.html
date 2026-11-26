@@ -1,418 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base de Datos de Órdenes - Visor, Telco, Atlas y SAM</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a1a24">
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #1a1a24;
-            color: #e0e0e6;
-            margin: 0;
-            padding: 16px;
-        }
-        .container {
-            max-width: 1750px;
-            margin: 0 auto;
-        }
-        h1, h2, h3 {
-            color: #4da6ff;
-            margin-top: 0;
-        }
-        .grid-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin-bottom: 18px;
-        }
-        @media (max-width: 992px) {
-            .grid-panel { grid-template-columns: 1fr; }
-        }
-        .card {
-            background-color: #242434;
-            padding: 18px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        textarea {
-            width: 100%;
-            height: 210px;
-            background-color: #12121a;
-            color: #5cf5a4;
-            border: 1px solid #44445c;
-            border-radius: 6px;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            box-sizing: border-box;
-            resize: vertical;
-        }
-        .form-group {
-            margin-bottom: 10px;
-        }
-        label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            background-color: #12121a;
-            color: #fff;
-            border: 1px solid #44445c;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4da6ff;
-            color: #111;
-            border: none;
-            padding: 9px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #80bfff; }
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 12px;
-        }
-        .btn-success { background-color: #2ecc71; color: #111; }
-        .btn-success:hover { background-color: #27ae60; color: #fff; }
-        .btn-danger { background-color: #e74c3c; color: #fff; }
-        .btn-danger:hover { background-color: #c0392b; }
-        .btn-secondary { background-color: #45475a; color: #fff; }
-        .btn-secondary:hover { background-color: #585b70; }
-
-        .search-box {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 10px;
-        }
-        .tabla-contenedor {
-            background-color: #242434;
-            padding: 18px;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-        th, td {
-            text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid #3d3d56;
-            vertical-align: top;
-        }
-        th {
-            background-color: #2d2d42;
-            color: #4da6ff;
-        }
-        th.col-claves, td.col-claves {
-            min-width: 250px;
-        }
-        th.col-notas, td.col-notas {
-            min-width: 240px;
-        }
-        .claves-casilla-ampliada {
-            max-height: 270px;
-            overflow-y: auto;
-            background-color: rgba(18, 18, 26, 0.55);
-            border: 1px solid #313244;
-            border-radius: 6px;
-            padding: 7px 9px;
-        }
-        .clave-item {
-            padding: 3px 0;
-            border-bottom: 1px dashed rgba(186, 194, 222, 0.14);
-        }
-        .clave-item:last-child {
-            border-bottom: none;
-        }
-        tbody tr.fila-orden {
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        tbody tr.fila-orden:hover {
-            background-color: #32324a;
-        }
-        .nota-box-tabla {
-            background-color: rgba(18, 18, 26, 0.65);
-            border: 1px solid #313244;
-            border-radius: 6px;
-            padding: 8px;
-        }
-        .nota-guardada-texto {
-            background-color: rgba(166, 227, 161, 0.08);
-            border-left: 3px solid #a6e3a1;
-            padding: 5px 7px;
-            border-radius: 0 4px 4px 0;
-            font-size: 12px;
-            color: #e0e0e6;
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin-bottom: 7px;
-            max-height: 110px;
-            overflow-y: auto;
-        }
-        .nota-input-fila {
-            width: 100%;
-            min-height: 62px;
-            background-color: #12121a;
-            color: #f9e2af;
-            border: 1px solid #44445c;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-family: inherit;
-            font-size: 12px;
-            box-sizing: border-box;
-            resize: vertical;
-        }
-        .nota-acciones-fila {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6px;
-            margin-top: 6px;
-        }
-        .estado-guardado {
-            font-size: 11px;
-            color: #a6e3a1;
-            min-height: 14px;
-        }
-        .badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-        .badge-visor { background-color: #9b59b6; color: #fff; }
-        .badge-telco { background-color: #00a8cc; color: #0e131a; }
-        .badge-atlas { background-color: #f59e0b; color: #111827; }
-        .badge-sam { background-color: #ef4444; color: #fff; }
-        .mat-tag {
-            display: inline-block;
-            background-color: rgba(249, 226, 175, 0.16);
-            border: 1px solid #f9e2af;
-            color: #f9e2af;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-top: 3px;
-        }
-        .eq-con-material {
-            background-color: rgba(166, 227, 161, 0.08);
-            border-left: 3px solid #a6e3a1;
-            padding: 4px 8px;
-            margin-bottom: 5px;
-            border-radius: 0 4px 4px 0;
-        }
-        .eq-sin-material {
-            padding: 3px 8px;
-            margin-bottom: 4px;
-            color: #a6adc8;
-        }
-        .item-telco {
-            background-color: rgba(0, 168, 204, 0.08);
-            border-left: 3px solid #4da6ff;
-            padding: 4px 8px;
-            margin-bottom: 5px;
-            border-radius: 0 4px 4px 0;
-        }
-        .item-atlas {
-            background-color: rgba(245, 158, 11, 0.09);
-            border-left: 3px solid #f59e0b;
-            padding: 4px 8px;
-            margin-bottom: 5px;
-            border-radius: 0 4px 4px 0;
-        }
-        .item-sam {
-            background-color: rgba(239, 68, 68, 0.09);
-            border-left: 3px solid #f87171;
-            padding: 4px 8px;
-            margin-bottom: 5px;
-            border-radius: 0 4px 4px 0;
-        }
-        .text-small {
-            font-size: 12px;
-            color: #bac2de;
-        }
-
-        /* Modal de detalle */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 1000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .modal-backdrop.activo {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
-        .modal-box {
-            background: #242434;
-            border: 1px solid #45475a;
-            border-radius: 10px;
-            max-width: 1250px;
-            width: 100%;
-            padding: 22px;
-            margin: 20px auto;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3d3d56;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        @media (max-width: 850px) {
-            .modal-grid { grid-template-columns: 1fr; }
-        }
-        .detalle-seccion {
-            background: #181825;
-            border: 1px solid #313244;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 14px;
-            overflow-x: auto;
-        }
-        .mono-dato {
-            font-family: monospace;
-            font-size: 12px;
-            line-height: 1.35;
-            color: #a6e3a1;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-        .raw-box {
-            background: #11111b;
-            border: 1px solid #313244;
-            border-radius: 6px;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 11px;
-            color: #cdd6f4;
-            white-space: pre-wrap;
-            max-height: 260px;
-            overflow-y: auto;
-        }
-        .kv-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 8px 14px;
-        }
-        .kv-item {
-            border-bottom: 1px dashed rgba(186, 194, 222, 0.14);
-            padding-bottom: 4px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>Órdenes de Servicio — Visor, Telco, Atlas y SAM</h1>
-
-    <div class="grid-panel">
-        <div class="card">
-            <h2>1. Captura de Orden / Avería</h2>
-            <p class="text-small">Pega un Boletín Visor, una Orden Telco, un Informe Atlas o una Avería SAM (se detecta automáticamente). Pulsa una fila para ver todos los datos o usa el apartado de notas al lado para anotar lo realizado.</p>
-            <textarea id="txtBruto" placeholder="Pega aquí el Boletín Visor, ORDEN DE TRABAJO TELCO, Atlas o Avería SAM..."></textarea>
-            <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-success" onclick="procesarOrden()">Procesar y Guardar</button>
-                <button class="btn-secondary" onclick="document.getElementById('txtBruto').value = ''">Limpiar Texto</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>2. Búsqueda y Control</h2>
-            <div class="search-box">
-                <div class="form-group">
-                    <label>Tipo de Registro</label>
-                    <select id="searchTipo" onchange="filtrarOrdenes()">
-                        <option value="">Todos</option>
-                        <option value="visor">Visor</option>
-                        <option value="telco_alta">Telco Alta</option>
-                        <option value="atlas">Atlas</option>
-                        <option value="sam_averia">Avería SAM</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Cliente / CIF / Teléfono / Email</label>
-                    <input type="text" id="searchCliente" oninput="filtrarOrdenes()" placeholder="Titular, CIF, 926..., 606..., @gmail...">
-                </div>
-                <div class="form-group">
-                    <label>Id. Avería / Nº Orden / Admtvo / WO</label>
-                    <input type="text" id="searchOrden" oninput="filtrarOrdenes()" placeholder="20260142369370, 26012500242, WO...">
-                </div>
-                <div class="form-group">
-                    <label>Síntoma / Diagnóstico / Notas / Clave</label>
-                    <input type="text" id="searchDato" oninput="filtrarOrdenes()" placeholder="CE04, SNAK, fusible, empalme, 10,0 GB...">
-                </div>
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="searchFecha" onchange="filtrarOrdenes()">
-                </div>
-            </div>
-            <div style="margin-top: 12px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
-                <button class="btn-danger" onclick="borrarTodaLaBD()">Borrar Base Local</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="tabla-contenedor">
-        <h2>Registros Almacenados <span class="text-small">(Pulsa una fila para ver el detalle o anota lo realizado en el apartado de notas al lado)</span></h2>
-        <table>
-            <thead>
-                <tr>
-                    <th width="10%">Tipo / Fecha</th>
-                    <th width="22%">Cliente / Identificador / Domicilio</th>
-                    <th width="20%">Diagnóstico / Equipos / Logística</th>
-                    <th width="22%" class="col-claves">Claves / Pruebas / Red / Contacto</th>
-                    <th width="12%">Estado / Prioridad</th>
-                    <th width="14%" class="col-notas">Notas de Actuación</th>
-                </tr>
-            </thead>
-            <tbody id="tbodyOrdenes"></tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal para visualizar el registro completo al pulsar -->
-<div id="modalDetalle" class="modal-backdrop" onclick="cerrarModalFondo(event)">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h2 id="modalTitulo" style="margin:0;">Detalle</h2>
-            <button class="btn-secondary" onclick="cerrarModal()">Cerrar (X)</button>
-        </div>
-        <div id="modalContenido"></div>
-    </div>
-</div>
-
 <script>
     const STORAGE_KEY = 'db_ordenes_visor_v1';
 
@@ -423,6 +8,14 @@
     window.onload = function () {
         listarOrdenes();
     };
+
+    function obtenerFechaCapturaIso() {
+        const ahora = new Date();
+        const yyyy = ahora.getFullYear();
+        const mm = String(ahora.getMonth() + 1).padStart(2, '0');
+        const dd = String(ahora.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
 
     function guardarNotaActuacion(id, textoNota, origin = 'tabla') {
         const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -661,8 +254,8 @@
             ? lineas.slice(idxTrazado + 1)
             : [];
 
-        const fechaBase = fReclamacion || fEntrada || fPrevista || '';
-        const fechaIso = fechaIsoDesdeTexto(fechaBase) || new Date().toISOString().split('T')[0];
+        const fechaCaptura = obtenerFechaCapturaIso();
+        const fechaBoletinIso = fechaIsoDesdeTexto(fReclamacion || fEntrada || fPrevista || '');
 
         const tfnoContacto = camposSam['Tfno.Contacto'] || '';
         const coordinador = camposSam['Coordinador'] || '';
@@ -674,14 +267,16 @@
             direccion: domicilioPostal,
             central,
             orden: idAveria,
-            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            anio: (fechaCaptura.match(/^(\d{4})/) || [])[1] || '',
             observaciones: sintoma || obsPrueba || obsCliente || ''
         };
 
         return {
             id: 'SAM-' + (idAveria || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
             tipo: 'sam_averia',
-            fecha: fechaIso,
+            fecha: fechaCaptura,
+            fechaCaptura,
+            fechaBoletin: fechaBoletinIso,
             notaActuacion: '',
             notaActualizada: '',
             cliente,
@@ -976,8 +571,8 @@
         const dirOrigenCliente = campos['Dire. Origen del cliente'] || '';
         const dirDestinoCliente = campos['Dire. Destino del cliente'] || '';
 
-        const fechaBase = campos['F. Efect'] || campos['F. Compromiso'] || campos['F. Versión'] || campos['F. Obj. Calidad'] || '';
-        const fechaIso = fechaIsoDesdeTexto(fechaBase) || new Date().toISOString().split('T')[0];
+        const fechaCaptura = obtenerFechaCapturaIso();
+        const fechaBoletinIso = fechaIsoDesdeTexto(campos['F. Efect'] || campos['F. Compromiso'] || campos['F. Versión'] || campos['F. Obj. Calidad'] || '');
 
         const cliente = {
             nombre: clienteNombre || opeTit || '',
@@ -986,14 +581,16 @@
             direccion: dirOrigenCliente || dirDestinoCliente || '',
             central: campos['Cod. Otro Sist.'] || '',
             orden: nOrden,
-            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            anio: (fechaCaptura.match(/^(\d{4})/) || [])[1] || '',
             observaciones: obsOrden || estadoOrden || ''
         };
 
         return {
             id: 'ATLAS-' + (nOrden || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
             tipo: 'atlas',
-            fecha: fechaIso,
+            fecha: fechaCaptura,
+            fechaCaptura,
+            fechaBoletin: fechaBoletinIso,
             notaActuacion: '',
             notaActualizada: '',
             cliente,
@@ -1157,7 +754,8 @@
         }
 
         const fechaTexto = camposMap['Fecha'] || '';
-        const fechaIso = fechaIsoDesdeTexto(fechaTexto) || new Date().toISOString().split('T')[0];
+        const fechaBoletinIso = fechaIsoDesdeTexto(fechaTexto);
+        const fechaCaptura = obtenerFechaCapturaIso();
 
         const ordenTrabajoCompleta = camposMap['Orden de trabajo'] || '';
         const woCorto = (ordenTrabajoCompleta.match(/^(WO\S+)/i) || [])[1] || ordenTrabajoCompleta;
@@ -1207,14 +805,16 @@
             central: camposMap['Central'] || '',
             centralNombre: camposMap['Central Nombre'] || '',
             orden: woCorto || coCorto || '',
-            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            anio: (fechaCaptura.match(/^(\d{4})/) || [])[1] || '',
             observaciones: camposMap['Descripcion CO'] || camposMap['Tipo de Trabajo'] || ''
         };
 
         return {
             id: 'TELCO-' + (woCorto || coCorto || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
             tipo: 'telco_alta',
-            fecha: fechaIso,
+            fecha: fechaCaptura,
+            fechaCaptura,
+            fechaBoletin: fechaBoletinIso,
             fechaHoraOriginal: fechaTexto,
             notaActuacion: '',
             notaActualizada: '',
@@ -1392,16 +992,16 @@
             }
         }
 
-        const fechaOrden = fechaIsoDesdeTexto(cliente.fechaFormulacion) ||
-            fechaIsoDesdeTexto(cliente.fechaEntrada) ||
-            cliente.fechaFormulacion ||
-            cliente.fechaEntrada ||
-            new Date().toISOString().split('T')[0];
+        const fechaCaptura = obtenerFechaCapturaIso();
+        const fechaBoletinIso = fechaIsoDesdeTexto(cliente.fechaFormulacion) ||
+            fechaIsoDesdeTexto(cliente.fechaEntrada) || '';
 
         return {
             id: 'VISOR-' + (cliente.orden || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
             tipo: 'visor',
-            fecha: fechaOrden,
+            fecha: fechaCaptura,
+            fechaCaptura,
+            fechaBoletin: fechaBoletinIso,
             notaActuacion: '',
             notaActualizada: '',
             cliente,
@@ -1430,6 +1030,14 @@
         } else {
             orden = parsearBoletinVisor(raw);
         }
+
+        const fechaCaptura = obtenerFechaCapturaIso();
+        orden.fecha = fechaCaptura;
+        orden.fechaCaptura = fechaCaptura;
+        orden.horaCaptura = new Date().toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
         const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
         db.unshift(orden);
@@ -1497,6 +1105,9 @@
             tr.className = 'fila-orden';
             tr.onclick = () => abrirModalOrden(orden.id);
 
+            const fechaMostrar = orden.fechaCaptura || orden.fecha || '-';
+            const horaMostrar = orden.horaCaptura ? ` · ${orden.horaCaptura}` : '';
+
             let celdasHtml = '';
 
             if (orden.tipo === 'sam_averia') {
@@ -1535,7 +1146,7 @@
                 celdasHtml = `
                     <td>
                         <span class="badge badge-sam">AVERÍA SAM</span><br>
-                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                         <span class="text-small">SEG: ${escapeHtml(s.seg || '-')}</span>
                     </td>
                     <td>
@@ -1582,7 +1193,7 @@
                 celdasHtml = `
                     <td>
                         <span class="badge badge-atlas">ATLAS</span><br>
-                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                         <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
                     </td>
                     <td>
@@ -1638,7 +1249,7 @@
                 celdasHtml = `
                     <td>
                         <span class="badge badge-telco">TELCO ALTA</span><br>
-                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                         <span class="text-small">${escapeHtml(t.fecha || '')}</span>
                     </td>
                     <td>
@@ -1682,7 +1293,7 @@
                 celdasHtml = `
                     <td>
                         <span class="badge badge-visor">VISOR</span><br>
-                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <strong>${escapeHtml(fechaMostrar)}</strong><span class="text-small">${escapeHtml(horaMostrar)}</span><br>
                         <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
                     </td>
                     <td>
@@ -1738,6 +1349,7 @@
                             <div class="kv-item"><div class="text-small">DNI/CIF</div><div class="mono-dato">${escapeHtml(s.dniCif || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">Area de planta</div><div>${escapeHtml(s.areaPlanta || '-')}</div></div>
                             <div class="kv-item" style="grid-column: 1 / -1;"><div class="text-small">Domicilio postal</div><div>${escapeHtml(s.domicilioPostal || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Fecha Captura</div><div class="mono-dato">${escapeHtml(orden.fechaCaptura || orden.fecha || '-')} ${escapeHtml(orden.horaCaptura || '')}</div></div>
                             <div class="kv-item"><div class="text-small">F.Reclamación</div><div class="mono-dato">${escapeHtml(s.fReclamacion || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">F.Entrada</div><div class="mono-dato">${escapeHtml(s.fEntrada || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">F.Prevista</div><div class="mono-dato">${escapeHtml(s.fPrevista || '-')}</div></div>
@@ -1833,6 +1445,7 @@
                     <div class="detalle-seccion">
                         <h3>Datos Generales, Orden y Circuito</h3>
                         <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Fecha Captura</div><div class="mono-dato">${escapeHtml(orden.fechaCaptura || orden.fecha || '-')} ${escapeHtml(orden.horaCaptura || '')}</div></div>
                             <div class="kv-item"><div class="text-small">N° Orden</div><div class="mono-dato"><strong>${escapeHtml(a.numeroOrden || '-')}</strong></div></div>
                             <div class="kv-item"><div class="text-small">N° Admtvo</div><div class="mono-dato"><strong>${escapeHtml(a.numeroAdmtvo || '-')}</strong></div></div>
                             <div class="kv-item"><div class="text-small">Tipo de orden (T. Orden)</div><div><strong>${escapeHtml(a.tipoOrden || '-')}</strong></div></div>
@@ -1966,10 +1579,11 @@
                     <div class="detalle-seccion">
                         <h3>Cabecera y Identificadores</h3>
                         <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Fecha Captura</div><div class="mono-dato">${escapeHtml(orden.fechaCaptura || orden.fecha || '-')} ${escapeHtml(orden.horaCaptura || '')}</div></div>
                             <div class="kv-item"><div class="text-small">Orden de trabajo</div><div class="mono-dato">${escapeHtml(t.ordenTrabajo || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">Codigo tarea</div><div class="mono-dato">${escapeHtml(t.codigoTarea || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">Customer Order</div><div class="mono-dato">${escapeHtml(t.customerOrder || '-')}</div></div>
-                            <div class="kv-item"><div class="text-small">Fecha</div><div>${escapeHtml(t.fecha || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Fecha Boletín</div><div>${escapeHtml(t.fecha || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">Telefono alta</div><div><strong>${escapeHtml(t.telefonoAlta || '-')}</strong></div></div>
                             <div class="kv-item"><div class="text-small">Descripcion CO</div><div>${escapeHtml(t.descripcionCO || '-')}</div></div>
                             <div class="kv-item"><div class="text-small">Coordinado</div><div>${escapeHtml(t.coordinado || '-')}</div></div>
@@ -2091,9 +1705,11 @@
                 <div class="modal-grid">
                     <div class="detalle-seccion">
                         <h3>Datos de Cliente</h3>
+                        <p><strong>Fecha Captura:</strong> <span class="mono-dato">${escapeHtml(orden.fechaCaptura || orden.fecha || '-')} ${escapeHtml(orden.horaCaptura || '')}</span></p>
                         <p><strong>Nombre / Titular:</strong> ${escapeHtml(orden.cliente.nombre || '-')}</p>
                         <p><strong>Teléfono:</strong> ${escapeHtml(orden.cliente.telefono || '-')} &nbsp;|&nbsp; <strong>Tel. Contacto:</strong> ${escapeHtml(orden.cliente.telefonoContacto || '-')}</p>
                         <p><strong>Año:</strong> ${escapeHtml(orden.cliente.anio || '-')} &nbsp;|&nbsp; <strong>Central:</strong> ${escapeHtml(orden.cliente.central || '-')} &nbsp;|&nbsp; <strong>Orden:</strong> ${escapeHtml(orden.cliente.orden || '-')}</p>
+                        <p><strong>F. Formulación / F. Entrada:</strong> ${escapeHtml(orden.cliente.fechaFormulacion || '-')} / ${escapeHtml(orden.cliente.fechaEntrada || '-')}</p>
                         <p><strong>Dirección:</strong> ${escapeHtml(orden.cliente.direccion || '-')}</p>
                         <p><strong>Observaciones:</strong> <span class="mono-dato">${escapeHtml(orden.cliente.observaciones || '-')}</span></p>
                     </div>
@@ -2242,7 +1858,15 @@
             ].join(' ').toLowerCase();
 
             const matchDat = !fDat || textoDatos.includes(fDat);
-            const matchFec = !fFec || o.fecha === fFec || c.fechaFormulacion === fFec || c.fechaEntrada === fFec;
+            const matchFec = !fFec ||
+                o.fecha === fFec ||
+                o.fechaCaptura === fFec ||
+                o.fechaBoletin === fFec ||
+                c.fechaFormulacion === fFec ||
+                c.fechaEntrada === fFec ||
+                s.fReclamacion === fFec ||
+                s.fEntrada === fFec ||
+                (a.camposGenerales && (a.camposGenerales['F. Efect'] === fFec || a.camposGenerales['F. Compromiso'] === fFec));
 
             return matchCli && matchOrd && matchDat && matchFec;
         });
@@ -2274,5 +1898,3 @@
         });
     }
 </script>
-</body>
-</html>
