@@ -3,58 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base de Datos de Órdenes de Servicio</title>
+    <title>Base de Datos de Órdenes - Visor, Telco, Atlas y SAM</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #1a1a24;
             color: #e0e0e6;
             margin: 0;
-            padding: 20px;
+            padding: 16px;
         }
         .container {
-            max-width: 1500px;
+            max-width: 1750px;
             margin: 0 auto;
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #4da6ff;
             margin-top: 0;
         }
         .grid-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 18px;
+            margin-bottom: 18px;
         }
         @media (max-width: 992px) {
             .grid-panel { grid-template-columns: 1fr; }
         }
         .card {
             background-color: #242434;
-            padding: 20px;
+            padding: 18px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         textarea {
             width: 100%;
-            height: 220px;
+            height: 210px;
             background-color: #12121a;
             color: #5cf5a4;
             border: 1px solid #44445c;
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px;
             font-family: monospace;
+            font-size: 12px;
             box-sizing: border-box;
             resize: vertical;
         }
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
         input, select {
             width: 100%;
@@ -69,45 +70,45 @@
             background-color: #4da6ff;
             color: #111;
             border: none;
-            padding: 10px 18px;
-            font-size: 15px;
+            padding: 9px 16px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.2s;
         }
-        button:hover {
-            background-color: #80bfff;
+        button:hover { background-color: #80bfff; }
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
         }
-        .btn-success { background-color: #2ecc71; color: #fff; }
-        .btn-success:hover { background-color: #27ae60; }
-        .btn-danger { background-color: #e74c3c; color: #fff; margin-top: 10px;}
+        .btn-success { background-color: #2ecc71; color: #111; }
+        .btn-success:hover { background-color: #27ae60; color: #fff; }
+        .btn-danger { background-color: #e74c3c; color: #fff; }
         .btn-danger:hover { background-color: #c0392b; }
-        
+        .btn-secondary { background-color: #45475a; color: #fff; }
+        .btn-secondary:hover { background-color: #585b70; }
+
         .search-box {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 10px;
-            margin-top: 15px;
         }
-        
-        /* Tablas */
         .tabla-contenedor {
             background-color: #242434;
-            padding: 20px;
+            padding: 18px;
             border-radius: 8px;
-            margin-top: 20px;
             overflow-x: auto;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 13px;
         }
         th, td {
             text-align: left;
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid #3d3d56;
             vertical-align: top;
         }
@@ -115,8 +116,77 @@
             background-color: #2d2d42;
             color: #4da6ff;
         }
-        tr:hover {
-            background-color: #2c2c3e;
+        th.col-claves, td.col-claves {
+            min-width: 250px;
+        }
+        th.col-notas, td.col-notas {
+            min-width: 240px;
+        }
+        .claves-casilla-ampliada {
+            max-height: 270px;
+            overflow-y: auto;
+            background-color: rgba(18, 18, 26, 0.55);
+            border: 1px solid #313244;
+            border-radius: 6px;
+            padding: 7px 9px;
+        }
+        .clave-item {
+            padding: 3px 0;
+            border-bottom: 1px dashed rgba(186, 194, 222, 0.14);
+        }
+        .clave-item:last-child {
+            border-bottom: none;
+        }
+        tbody tr.fila-orden {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        tbody tr.fila-orden:hover {
+            background-color: #32324a;
+        }
+        .nota-box-tabla {
+            background-color: rgba(18, 18, 26, 0.65);
+            border: 1px solid #313244;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        .nota-guardada-texto {
+            background-color: rgba(166, 227, 161, 0.08);
+            border-left: 3px solid #a6e3a1;
+            padding: 5px 7px;
+            border-radius: 0 4px 4px 0;
+            font-size: 12px;
+            color: #e0e0e6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 7px;
+            max-height: 110px;
+            overflow-y: auto;
+        }
+        .nota-input-fila {
+            width: 100%;
+            min-height: 62px;
+            background-color: #12121a;
+            color: #f9e2af;
+            border: 1px solid #44445c;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-family: inherit;
+            font-size: 12px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .nota-acciones-fila {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .estado-guardado {
+            font-size: 11px;
+            color: #a6e3a1;
+            min-height: 14px;
         }
         .badge {
             padding: 3px 8px;
@@ -124,275 +194,2076 @@
             font-size: 11px;
             font-weight: bold;
             display: inline-block;
+            margin-bottom: 4px;
         }
         .badge-visor { background-color: #9b59b6; color: #fff; }
-        .badge-telco { background-color: #3498db; color: #fff; }
-        .badge-san { background-color: #e67e22; color: #fff; }
-        .badge-wines { background-color: #e74c3c; color: #fff; }
-        
-        .text-small {
+        .badge-telco { background-color: #00a8cc; color: #0e131a; }
+        .badge-atlas { background-color: #f59e0b; color: #111827; }
+        .badge-sam { background-color: #ef4444; color: #fff; }
+        .mat-tag {
+            display: inline-block;
+            background-color: rgba(249, 226, 175, 0.16);
+            border: 1px solid #f9e2af;
+            color: #f9e2af;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-size: 11px;
-            color: #b4b4bb;
+            font-weight: bold;
+            margin-top: 3px;
         }
-        .ip-cell {
+        .eq-con-material {
+            background-color: rgba(166, 227, 161, 0.08);
+            border-left: 3px solid #a6e3a1;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            border-radius: 0 4px 4px 0;
+        }
+        .eq-sin-material {
+            padding: 3px 8px;
+            margin-bottom: 4px;
+            color: #a6adc8;
+        }
+        .item-telco {
+            background-color: rgba(0, 168, 204, 0.08);
+            border-left: 3px solid #4da6ff;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            border-radius: 0 4px 4px 0;
+        }
+        .item-atlas {
+            background-color: rgba(245, 158, 11, 0.09);
+            border-left: 3px solid #f59e0b;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            border-radius: 0 4px 4px 0;
+        }
+        .item-sam {
+            background-color: rgba(239, 68, 68, 0.09);
+            border-left: 3px solid #f87171;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            border-radius: 0 4px 4px 0;
+        }
+        .text-small {
+            font-size: 12px;
+            color: #bac2de;
+        }
+
+        /* Modal de detalle */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-backdrop.activo {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .modal-box {
+            background: #242434;
+            border: 1px solid #45475a;
+            border-radius: 10px;
+            max-width: 1250px;
+            width: 100%;
+            padding: 22px;
+            margin: 20px auto;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3d3d56;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 850px) {
+            .modal-grid { grid-template-columns: 1fr; }
+        }
+        .detalle-seccion {
+            background: #181825;
+            border: 1px solid #313244;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+        }
+        .mono-dato {
             font-family: monospace;
             font-size: 12px;
+            line-height: 1.35;
             color: #a6e3a1;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        .raw-box {
+            background: #11111b;
+            border: 1px solid #313244;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #cdd6f4;
+            white-space: pre-wrap;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .kv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px 14px;
+        }
+        .kv-item {
+            border-bottom: 1px dashed rgba(186, 194, 222, 0.14);
+            padding-bottom: 4px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Sistema de Registro con Segmentación de Red</h1>
+    <h1>Órdenes de Servicio — Visor, Telco, Atlas y SAM</h1>
 
     <div class="grid-panel">
         <div class="card">
-            <h2>1. Entrada de Boletín (Pegar Texto)</h2>
-            <p style="font-size: 13px; color: #aaa;">Pega el boletín aquí. Las IPs y máscaras se detectarán y se separarán automáticamente en celdas independientes.</p>
-            <textarea id="txtBruto" placeholder="Boletín Visord..."></textarea>
-            <div style="margin-top: 10px;">
-                <button class="btn-success" onclick="procesarBoletin()">Procesar e Insertar</button>
+            <h2>1. Captura de Orden / Avería</h2>
+            <p class="text-small">Pega un Boletín Visor, una Orden Telco, un Informe Atlas o una Avería SAM (se detecta automáticamente). Pulsa una fila para ver todos los datos o usa el apartado de notas al lado para anotar lo realizado.</p>
+            <textarea id="txtBruto" placeholder="Pega aquí el Boletín Visor, ORDEN DE TRABAJO TELCO, Atlas o Avería SAM..."></textarea>
+            <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-success" onclick="procesarOrden()">Procesar y Guardar</button>
+                <button class="btn-secondary" onclick="document.getElementById('txtBruto').value = ''">Limpiar Texto</button>
             </div>
         </div>
 
         <div class="card">
-            <h2>2. Buscador y Filtros Avanzados</h2>
+            <h2>2. Búsqueda y Control</h2>
             <div class="search-box">
                 <div class="form-group">
-                    <label>Buscar por Cliente / NIF</label>
-                    <input type="text" id="searchCliente" oninput="filtrarOrdenes()" placeholder="Nombre, NIF, Teléfono...">
-                </div>
-                <div class="form-group">
-                    <label>Buscar por IP Específica</label>
-                    <input type="text" id="searchIP" oninput="filtrarOrdenes()" placeholder="Ej: 100.187...">
-                </div>
-                <div class="form-group">
-                    <label>Fecha Instalación</label>
-                    <input type="date" id="searchFecha" onchange="filtrarOrdenes()">
-                </div>
-                <div class="form-group">
-                    <label>Tipo de Orden</label>
+                    <label>Tipo de Registro</label>
                     <select id="searchTipo" onchange="filtrarOrdenes()">
                         <option value="">Todos</option>
                         <option value="visor">Visor</option>
-                        <option value="telco">Telco</option>
-                        <option value="averias san">Averías SAN</option>
-                        <option value="averias wines">Averías Wines</option>
-                        <option value="averias telco">Averías Telco</option>
+                        <option value="telco_alta">Telco Alta</option>
+                        <option value="atlas">Atlas</option>
+                        <option value="sam_averia">Avería SAM</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Cliente / CIF / Teléfono / Email</label>
+                    <input type="text" id="searchCliente" oninput="filtrarOrdenes()" placeholder="Titular, CIF, 926..., 606..., @gmail...">
+                </div>
+                <div class="form-group">
+                    <label>Id. Avería / Nº Orden / Admtvo / WO</label>
+                    <input type="text" id="searchOrden" oninput="filtrarOrdenes()" placeholder="20260142369370, 26012500242, WO...">
+                </div>
+                <div class="form-group">
+                    <label>Síntoma / Diagnóstico / Notas / Clave</label>
+                    <input type="text" id="searchDato" oninput="filtrarOrdenes()" placeholder="CE04, SNAK, fusible, empalme, 10,0 GB...">
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="searchFecha" onchange="filtrarOrdenes()">
+                </div>
             </div>
-            <button style="margin-top: 15px; background-color: #555; color: #fff;" onclick="limpiarFiltros()">Limpiar Filtros</button>
-            <button class="btn-danger" style="float: right;" onclick="borrarTodaLaBD()">Resetear Base de Datos</button>
+            <div style="margin-top: 12px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                <button class="btn-danger" onclick="borrarTodaLaBD()">Borrar Base Local</button>
+            </div>
         </div>
     </div>
 
     <div class="tabla-contenedor">
-        <h2>Registros de Órdenes y Segmentos de Red Dedicados</h2>
+        <h2>Registros Almacenados <span class="text-small">(Pulsa una fila para ver el detalle o anota lo realizado en el apartado de notas al lado)</span></h2>
         <table>
             <thead>
                 <tr>
-                    <th width="8%">Fecha Inst.</th>
-                    <th width="20%">Tabla Clientes (Común)</th>
-                    <th width="18%">Tabla Equipos</th>
-                    <th width="10%">Tipo Orden</th>
-                    <th width="14%">IP WAN (Enlace)</th>
-                    <th width="14%">IP LAN (Datos)</th>
-                    <th width="16%">Observaciones / Línea</th>
+                    <th width="10%">Tipo / Fecha</th>
+                    <th width="22%">Cliente / Identificador / Domicilio</th>
+                    <th width="20%">Diagnóstico / Equipos / Logística</th>
+                    <th width="22%" class="col-claves">Claves / Pruebas / Red / Contacto</th>
+                    <th width="12%">Estado / Prioridad</th>
+                    <th width="14%" class="col-notas">Notas de Actuación</th>
                 </tr>
             </thead>
-            <tbody id="tbodyOrdenes">
-                </tbody>
+            <tbody id="tbodyOrdenes"></tbody>
         </table>
     </div>
 </div>
 
+<!-- Modal para visualizar el registro completo al pulsar -->
+<div id="modalDetalle" class="modal-backdrop" onclick="cerrarModalFondo(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 id="modalTitulo" style="margin:0;">Detalle</h2>
+            <button class="btn-secondary" onclick="cerrarModal()">Cerrar (X)</button>
+        </div>
+        <div id="modalContenido"></div>
+    </div>
+</div>
+
 <script>
-    if (!localStorage.getItem('db_ordenes_v3')) {
-        localStorage.setItem('db_ordenes_v3', JSON.stringify([]));
+    const STORAGE_KEY = 'db_ordenes_visor_v1';
+
+    if (!localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     }
 
-    window.onload = function() {
+    window.onload = function () {
         listarOrdenes();
     };
 
-    function parsearTextoBoletin(texto) {
-        const regexTitular = /Titular\s+([^\n\r\t]+)/i;
-        const regexNif = /N\.I\.F\.\s+([^\n\r\t]+)/i;
-        const regexTelefono = /Teléfono\s+([0-9]+)/i;
-        const regexDomicilio = /Domicilio\s+([^\n\r]+)/i;
-        const regexFecha = /F\.\s+Formulación\s+([0-9]{4}-[0-9]{2}-[0-9]{2})/i;
-        const regexObserva = /Observa\s+([^\n\r\t]+)/i;
-        const regexOrdenNum = /Orden\s+([0-9]+)/i;
+    function guardarNotaActuacion(id, textoNota, origin = 'tabla') {
+        const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        const idx = db.findIndex(o => o.id === id);
+        if (idx === -1) return;
 
-        const titular = texto.match(regexTitular)?.[1]?.trim() || "Desconocido";
-        const nif = texto.match(regexNif)?.[1]?.trim() || "N/A";
-        const telefono = texto.match(regexTelefono)?.[1]?.trim() || "N/A";
-        const domicilio = texto.match(regexDomicilio)?.[1]?.trim() || "No especificado";
-        const fechaFormulacion = texto.match(regexFecha)?.[1] || new Date().toISOString().split('T')[0];
-        const observaciones = texto.match(regexObserva)?.[1]?.trim() || "Sin observaciones";
-        const numeroOrden = texto.match(regexOrdenNum)?.[1] || "S/N";
+        db[idx].notaActuacion = textoNota;
+        db[idx].notaActualizada = new Date().toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
 
-        let tipoOrden = "visor";
-        const textoMin = texto.toLowerCase();
-        if (textoMin.includes("averias san") || textoMin.includes("averías san")) tipoOrden = "averias san";
-        else if (textoMin.includes("averias wines") || textoMin.includes("averías wines")) tipoOrden = "averias wines";
-        else if (textoMin.includes("averias telco") || textoMin.includes("averías telco")) tipoOrden = "averias telco";
-        else if (textoMin.includes("telco")) tipoOrden = "telco";
-        else if (textoMin.includes("visor")) tipoOrden = "visor";
-
-        // Extraer Equipos Principales
-        let equiposEncontrados = [];
-        if (textoMin.includes("router")) {
-            const lineaRouter = texto.split('\n').find(l => l.toLowerCase().includes('router'));
-            if(lineaRouter) equiposEncontrados.push(lineaRouter.replace(/^[Y|A]\s+/i, '').trim());
-        }
-        if (textoMin.includes("switch")) {
-            const lineaSwitch = texto.split('\n').find(l => l.toLowerCase().includes('switch'));
-            if(lineaSwitch) equiposEncontrados.push(lineaSwitch.replace(/^[Y|A]\s+/i, '').trim());
-        }
-        if (textoMin.includes("ont-terminacion")) {
-            equiposEncontrados.push("ONT - Terminación de Red Óptica");
-        }
-        if (equiposEncontrados.length === 0) {
-            equiposEncontrados.push("Acceso FTTH / Línea Estándar");
-        }
-
-        // --- EXTRACCIÓN AVANZADA Y SEPARACIÓN DE IPs ---
-        let ipWan = "No asignada";
-        let ipLan = "No asignada";
-        
-        const lineasTexto = texto.split('\n');
-        lineasTexto.forEach(l => {
-            // Identificar IP WAN (Suelen venir marcadas con DVPE)
-            if (l.includes("DVPE/")) {
-                ipWan = l.substring(l.indexOf("DVPE/")).trim();
+        if (origin === 'tabla') {
+            const vista = document.getElementById(`nota-vista-${id}`);
+            const estado = document.getElementById(`nota-estado-${id}`);
+            if (vista) {
+                vista.textContent = textoNota.trim() ? textoNota : 'Sin notas de actuación todavía.';
             }
-            // Identificar IP LAN (Suelen venir marcadas con LNDA)
-            if (l.includes("LNDA/")) {
-                ipLan = l.substring(l.indexOf("LNDA/")).trim();
+            if (estado) {
+                estado.textContent = `Guardado (${db[idx].notaActualizada})`;
+            }
+        } else if (origin === 'modal') {
+            const estadoModal = document.getElementById('modal-nota-estado');
+            if (estadoModal) {
+                estadoModal.textContent = `Nota guardada (${db[idx].notaActualizada})`;
+            }
+            const vistaTabla = document.getElementById(`nota-vista-${id}`);
+            const inputTabla = document.getElementById(`nota-input-${id}`);
+            const estadoTabla = document.getElementById(`nota-estado-${id}`);
+            if (vistaTabla) {
+                vistaTabla.textContent = textoNota.trim() ? textoNota : 'Sin notas de actuación todavía.';
+            }
+            if (inputTabla) {
+                inputTabla.value = textoNota;
+            }
+            if (estadoTabla) {
+                estadoTabla.textContent = `Guardado (${db[idx].notaActualizada})`;
+            }
+        }
+    }
+
+    // Convierte HTML o MHTML pegado a texto estructurado por líneas y celdas
+    function normalizarEntrada(raw) {
+        let limpio = raw;
+
+        if (/Content-Type:\s*multipart\/related/i.test(limpio)) {
+            const matchHtml = limpio.match(/Content-Type:\s*text\/html[\s\S]*?\r?\n\r?\n([\s\S]*?)(?:\r?\n------MultipartBoundary|$)/i);
+            if (matchHtml && matchHtml[1]) {
+                limpio = matchHtml[1];
+            }
+        }
+        limpio = limpio.replace(/=\r?\n/g, '').replace(/=3D/gi, '=');
+
+        if (/<(table|tr|td|th|font|body|html|a|br)/i.test(limpio)) {
+            const temp = document.createElement('div');
+            temp.innerHTML = limpio;
+
+            temp.querySelectorAll('br').forEach(br => br.replaceWith(document.createTextNode('\n')));
+
+            temp.querySelectorAll('tr').forEach(tr => {
+                const celdas = Array.from(tr.querySelectorAll(':scope > td, :scope > th'))
+                    .map(c => c.innerText.replace(/\s+/g, ' ').trim());
+                if (celdas.length > 0) {
+                    tr.before(document.createTextNode(celdas.join(' \t ') + '\n'));
+                }
+                tr.remove();
+            });
+
+            temp.querySelectorAll('caption').forEach(cap => {
+                cap.before(document.createTextNode('\n' + cap.innerText.trim() + '\n'));
+                cap.remove();
+            });
+
+            return (temp.innerText || temp.textContent || '')
+                .replace(/\u00a0/g, ' ')
+                .replace(/\r/g, '')
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 0);
+        }
+
+        return limpio
+            .replace(/\u00a0/g, ' ')
+            .replace(/\r/g, '')
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+    }
+
+    function extraerCampoEtiqueta(lineas, etiqueta) {
+        const esc = etiqueta.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`\\b${esc}\\s+(.+?)(?=\\s+(?:Teléfono|LE|Central|Clase|Año|Id\\.Orden\\.\\s*Prov|Orden|Solicitud|Área|Negocio|F\\.\\s*Formulación|F\\.\\s*Entrada|F\\.\\s*efectividad|F\\.\\s*Interes|Entidad|Horas\\s*Prev\\.|Titular|Traba\\.relacionado|Domicilio|Observa|Tel\\.Contacto|Segmento|Subsegmento|N\\.I\\.F\\.|Contrata|Instalador|F\\.\\s*Entrega|F\\.\\s*Conexión|Nro\\.\\s*Prueba|Contacto\\s*concert\\.|Fecha|Tel\\s*concert\\.|Observaciones\\s*concert)\\b|$)`, 'i');
+
+        for (const linea of lineas) {
+            const m = linea.match(re);
+            if (m && m[1] !== undefined) {
+                return m[1].replace(/\s+/g, ' ').trim();
+            }
+        }
+        return '';
+    }
+
+    function esBoletinSam(rawTexto, lineas) {
+        if (/\bId\.\s*Aver[ií]a\b/i.test(rawTexto)) return true;
+        if (/\bF\.Reclamaci[oó]n\b/i.test(rawTexto) && /\bDATOS\s+PRUEBA\b/i.test(rawTexto)) return true;
+        if (lineas.some(l => /^(Id\.\s*Aver[ií]a|DATOS\s+PRUEBA|OBSERVACIONES\s+PRUEBA|DATOS\s+AVER[IÍ]A|TRAZADO\s+ADSL)\b/i.test(l))) return true;
+        return false;
+    }
+
+    function esBoletinTelco(rawTexto, lineas) {
+        if (/Boletin\s+ORDEN\s+DE\s+TRABAJO\s+TELCO/i.test(rawTexto)) return true;
+        if (/\bOrden de trabajo\s*:/i.test(rawTexto) && /\bCodigo tarea\s*:/i.test(rawTexto)) return true;
+        if (lineas.some(l => /^(Orden de trabajo|Codigo tarea|Customer Order|Telefono alta)\s*:/i.test(l))) return true;
+        return false;
+    }
+
+    function esBoletinAtlas(rawTexto, lineas) {
+        if (/ACTUACIONES\s+ORDEN\s+CIRCUITO\s+PRIVADO\s*-\s*Datos\s+Atlas/i.test(rawTexto)) return true;
+        if (/N[°º]\s*Admtvo\s*:/i.test(rawTexto) && /Trazado\s+circuitos/i.test(rawTexto)) return true;
+        if (lineas.some(l => /^(Datos generales|Datos orden|Datos circuito|Datos cliente|Datos actuación|Trazado circuitos|Facilid\.\s*Cable|Equipos de abonado|Datos Notas)$/i.test(l.replace(/^[☑►\s]+/, '')))) return true;
+        return false;
+    }
+
+    function fechaIsoDesdeTexto(fechaStr) {
+        if (!fechaStr) return '';
+        const mDmy = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (mDmy) {
+            const dd = mDmy[1].padStart(2, '0');
+            const mm = mDmy[2].padStart(2, '0');
+            const yyyy = mDmy[3];
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        const mIso = fechaStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+        if (mIso) return `${mIso[1]}-${mIso[2]}-${mIso[3]}`;
+        return '';
+    }
+
+    function parsearAveriaSam(rawTexto) {
+        const lineas = normalizarEntrada(rawTexto);
+        const textoPlano = lineas.join('\n');
+
+        const matchInlineField = (etq) => {
+            const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const m = textoPlano.match(new RegExp(`(?:^|[\\n\\t])\\s*${esc}\\s*:?\\s*(.+?)(?=(?:\\s*\\t\\s*|\\s*\\n|$))`, 'i'));
+            return m ? m[1].replace(/\s+/g, ' ').trim() : '';
+        };
+
+        const idAveria = matchInlineField('Id. Avería') || matchInlineField('Id. Averia');
+        const tel = (textoPlano.match(/\bTEL\s*:\s*([0-9+\s]+)/i) || [])[1]?.trim() || '';
+        const central = (textoPlano.match(/\bCENTRAL\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+        const seg = (textoPlano.match(/\bSEG\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+        const dniCif = (textoPlano.match(/\bDNI\/CIF\s*:\s*([A-Z0-9_-]+)/i) || [])[1]?.trim() || '';
+
+        const fReclamacion = matchInlineField('F.Reclamación') || matchInlineField('F. Reclamación');
+        const fEntrada = matchInlineField('F.Entrada') || matchInlineField('F. Entrada');
+        const fPrevista = matchInlineField('F.Prevista') || matchInlineField('F. Prevista');
+
+        const idxDni = lineas.findIndex(l => /^DNI\/CIF\s*:/i.test(l));
+        const idxFinDom = lineas.findIndex((l, idx) => idx > idxDni && /^(F\.Reclamaci[oó]n|F\.\s*Reclamaci[oó]n|DATOS\s+PRUEBA)/i.test(l));
+        const bloqueDom = (idxDni !== -1)
+            ? lineas.slice(idxDni + 1, idxFinDom === -1 ? lineas.length : idxFinDom).filter(l => !/^Domicilio postal\s*:?$/i.test(l))
+            : [];
+
+        let areaPlanta = '';
+        const domicilioLineas = [];
+        bloqueDom.forEach(l => {
+            if (/^Area de planta\s*:/i.test(l)) {
+                areaPlanta = l.replace(/^Area de planta\s*:\s*/i, '').trim();
+            } else {
+                domicilioLineas.push(l);
             }
         });
 
-        return {
-            fechaInstalacion: fechaFormulacion,
-            numeroOrden: numeroOrden,
-            cliente: { nombre: titular, nif: nif, telefono: telefono, domicilio: domicilio },
-            equipos: equiposEncontrados,
-            linea: {
-                tipo: tipoOrden,
-                observaciones: observaciones,
-                ipWan: ipWan,
-                ipLan: ipLan
+        const nombreCliente = domicilioLineas[0] || '';
+        const domicilioPostal = domicilioLineas.join(' · ');
+
+        const sintoma = (textoPlano.match(/S[ií]ntoma\s*:\s*(.+?)(?=\n|Observaciones de Cliente\s*:|REPU\s*:|Diagn[oó]stico\s*:|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const obsCliente = (textoPlano.match(/Observaciones de Cliente\s*:\s*(.+?)(?=\n\s*REPU\s*:|\n\s*Diagn[oó]stico\s*:|\n\s*SSD\s*:|\n\s*OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const repu = (textoPlano.match(/\bREPU\s*:\s*(.+?)(?=\t|\n|Diagn[oó]stico\s*:|SSD\s*:|$)/i) || [])[1]?.trim() || '';
+        const diagnostico = (textoPlano.match(/Diagn[oó]stico\s*:\s*(.+?)(?=\t|\n|SSD\s*:|OBSERVACIONES\s+PRUEBA|$)/i) || [])[1]?.trim() || '';
+        const ssd = (textoPlano.match(/\bSSD\s*:\s*([0-9A-Za-z._-]+)/i) || [])[1]?.trim() || '';
+        const obsPrueba = (textoPlano.match(/OBSERVACIONES\s+PRUEBA\s*:?\s*(.+?)(?=\n\s*Log[ií]stica\b|\n\s*[X]{4,}|\n\s*[ÚU]LTIMA\s+NOTA|\n\s*DATOS\s+CONTACTO|\n\s*DATOS\s+AVER[IÍ]A|$)/is) || [])[1]?.replace(/\s+/g, ' ').trim() || '';
+
+        const logistica = [];
+        for (let i = 0; i < lineas.length; i++) {
+            const l = lineas[i];
+            if (/^Log[ií]stica\b/i.test(l) && /Contratable/i.test(l)) continue;
+            if (/^([X*]{4,8}|[0-9]{4,8})\s+\t\s*([0-9]+)\s+\t\s*(\[[^\]]+\][^\t]*)\s+\t\s*(\[[^\]]+\][^\t]*)\s+\t\s*([0-9]+)$/i.test(l)) {
+                const p = l.split(/\s*\t+\s*/);
+                logistica.push({
+                    codigo: p[0],
+                    ps: p[1],
+                    contratable: p[2],
+                    regimen: p[3],
+                    uds: p[4]
+                });
             }
+        }
+
+        const camposSam = {};
+        const etiquetasSam = [
+            'Laborables', 'N.Repetidas', 'Incidencia', 'Sábados', 'Sabados',
+            'Reiteraciones', 'Prioridad', 'Festivos', 'Av.Infancia', 'Peso Total',
+            'Fecha Cita', 'Premasiva', 'Incomunicación', 'Coordinador', 'Cód. Masiva',
+            'Fuerza Mayor', 'Tfno.Contacto', 'Núm. Masiva', 'Afec.S.Univ.',
+            'Acepta Pago', 'Parada Reloj', 'T.Total', 'Plan Choque', 'T.Imput'
+        ];
+
+        lineas.forEach(l => {
+            const partes = l.split(/\s*\t+\s*/).filter(Boolean);
+            for (let idx = 0; idx < partes.length; idx++) {
+                const segPart = partes[idx];
+                for (const etq of etiquetasSam) {
+                    const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const m = segPart.match(new RegExp(`^${esc}\\s*:?\\s*(.*)$`, 'i'));
+                    if (m) {
+                        let val = (m[1] || '').trim();
+                        if (!val && idx + 1 < partes.length) {
+                            val = partes[idx + 1].trim();
+                        }
+                        camposSam[etq] = val;
+                    }
+                }
+            }
+        });
+
+        const idxAsig = lineas.findIndex(l => /^ASIGNACI[OÓ]N$/i.test(l));
+        const idxTrazado = lineas.findIndex(l => /^TRAZADO\s+ADSL$/i.test(l));
+        const asignacionLineas = (idxAsig !== -1)
+            ? lineas.slice(idxAsig + 1, idxTrazado === -1 ? lineas.length : idxTrazado)
+            : [];
+        const trazadoAdslLineas = (idxTrazado !== -1)
+            ? lineas.slice(idxTrazado + 1)
+            : [];
+
+        const fechaBase = fReclamacion || fEntrada || fPrevista || '';
+        const fechaIso = fechaIsoDesdeTexto(fechaBase) || new Date().toISOString().split('T')[0];
+
+        const tfnoContacto = camposSam['Tfno.Contacto'] || '';
+        const coordinador = camposSam['Coordinador'] || '';
+
+        const cliente = {
+            nombre: nombreCliente || coordinador || '',
+            telefono: tel,
+            telefonoContacto: tfnoContacto,
+            direccion: domicilioPostal,
+            central,
+            orden: idAveria,
+            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            observaciones: sintoma || obsPrueba || obsCliente || ''
+        };
+
+        return {
+            id: 'SAM-' + (idAveria || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
+            tipo: 'sam_averia',
+            fecha: fechaIso,
+            notaActuacion: '',
+            notaActualizada: '',
+            cliente,
+            sam: {
+                idAveria, tel, central, seg, dniCif, nombreCliente, domicilioPostal, areaPlanta,
+                fReclamacion, fEntrada, fPrevista, sintoma, obsCliente, repu, diagnostico, ssd,
+                obsPrueba, logistica,
+                laborables: camposSam['Laborables'] || '',
+                sabados: camposSam['Sábados'] || camposSam['Sabados'] || '',
+                festivos: camposSam['Festivos'] || '',
+                coordinador, tfnoContacto,
+                prioridad: camposSam['Prioridad'] || '',
+                pesoTotal: camposSam['Peso Total'] || '',
+                fechaCita: camposSam['Fecha Cita'] || '',
+                incidencia: camposSam['Incidencia'] || '',
+                nRepetidas: camposSam['N.Repetidas'] || '',
+                reiteraciones: camposSam['Reiteraciones'] || '',
+                premasiva: camposSam['Premasiva'] || '',
+                incomunicacion: camposSam['Incomunicación'] || '',
+                codMasiva: camposSam['Cód. Masiva'] || '',
+                fuerzaMayor: camposSam['Fuerza Mayor'] || '',
+                numMasiva: camposSam['Núm. Masiva'] || '',
+                afecSUniv: camposSam['Afec.S.Univ.'] || '',
+                aceptaPago: camposSam['Acepta Pago'] || '',
+                paradaReloj: camposSam['Parada Reloj'] || '',
+                tTotal: camposSam['T.Total'] || '',
+                planChoque: camposSam['Plan Choque'] || '',
+                tImput: camposSam['T.Imput'] || '',
+                asignacionLineas,
+                trazadoAdslLineas,
+                camposSam
+            },
+            rawTexto
         };
     }
 
-    function procesarBoletin() {
-        const textoBruto = document.getElementById('txtBruto').value.trim();
-        if (!textoBruto) {
-            alert("El cuadro está vacío. Pega un boletín válido.");
+    function limpiarLineaAtlas(l) {
+        return l
+            .replace(/^[☑►\s]+/, '')
+            .replace(/Nº/g, 'N°')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function parsearBoletinAtlas(rawTexto) {
+        const rawLineas = normalizarEntrada(rawTexto);
+        const lineas = rawLineas.map(limpiarLineaAtlas).filter(Boolean);
+
+        const etiquetasAtlas = [
+            'Número de orden', 'Cod. Otro Sist.', 'Ambito geográfico', 'N° Orden', 'N° Admtvo',
+            'N° Versión', 'F. Versión', 'T. Orden', 'Necesidad', 'Cuestionario',
+            'Estado de la orden', 'Grupo de órdenes', 'Apilamiento', 'F. Efect', 'F. Compromiso',
+            'F. Obj. Calidad', 'N° Pet/Nri', 'Ocasional', 'Ord. Relacionadas', 'Obs. Orden',
+            'T. Ct. Espec.', 'Velocidad', 'N° Hilos', 'N° Ctos.', 'N° Serie', 'Rango cic',
+            'Cancelador eco', 'Crtd', 'Cic trama 2mb', 'Ident. Grupo', 'Haz', 'Modo transmisión',
+            'Bits por carácter', 'Gama velocidad', 'Familia', 'Desc. familia', 'Cliente',
+            'Dni/Nif', 'Clase Serv.', 'Dint/O.uso', 'APC', 'Ope./Tit.', 'Loc. Origen',
+            'Loc. Destino', 'Dire. Origen del cliente', 'Dire. Destino del cliente',
+            'T. Unidad', 'Unidad Op.', 'Provincia', 'T. Jalón', 'Localiz.', 'Estado',
+            'Actuación cargada', 'T. Actuacion', 'F. Prevista'
+        ];
+
+        const campos = {};
+        etiquetasAtlas.forEach(etq => { campos[etq] = ''; });
+
+        const trazadoCircuito = [];
+        const equipos = [];
+        const catalogoTarjetas = [];
+        const facilidCable = [];
+        const facilidGrupo = [];
+        const terminales = [];
+        const equiposAbonado = [];
+        const datosNotas = [];
+        const informeActuacion = [];
+        const datosActuacionLista = [];
+        const extrasAtlas = [];
+
+        let seccion = 'INFORME';
+
+        const esEncabezadoSeccion = (txt) =>
+            /^(Informe de actuaciones|Datos generales|Datos orden|Datos circuito|Datos cliente|Datos actuación|Datos rpv\/sede|Datos Centrex Grupo IP|Datos Centrex Sede IP|Datos Centrex Extensiones|Datos Oficina Integral|Datos Oficina Conectada|Datos Rai|Datos Ruta|Datos LMDS|Datos NOTA DATINT|Datos Proyectos A Medida|Datos Trazado Lógico|Circuitos orden|Trazado circuitos|Equipos|Catálogo tarjetas|Datos Ditra|Facilid\. Cable|Facilid\. Grupo|Terminales|Equipos de abonado|Notas|Datos Notas|Ver Datos Portico|ACTUACIONES ORDEN CIRCUITO PRIVADO - Datos Atlas)$/i.test(txt);
+
+        const esEtiquetaConocida = (txt) =>
+            etiquetasAtlas.some(e => new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s*:)?$`, 'i').test(txt));
+
+        const extraerValorSiguiente = (startIdx) => {
+            for (let j = startIdx; j < lineas.length; j++) {
+                const cand = lineas[j];
+                if (!cand || cand === '|') continue;
+                if (esEncabezadoSeccion(cand) || esEtiquetaConocida(cand)) return { val: '', nextIdx: startIdx };
+                return { val: cand, nextIdx: j };
+            }
+            return { val: '', nextIdx: startIdx };
+        };
+
+        for (let i = 0; i < lineas.length; i++) {
+            const linea = lineas[i];
+            if (!linea || linea === '|') continue;
+
+            if (linea.includes('\t')) {
+                const celdas = linea.split(/\s*\t+\s*/).map(c => c.trim()).filter(Boolean);
+                for (let c = 0; c < celdas.length; c++) {
+                    const celda = celdas[c];
+                    for (const etq of etiquetasAtlas) {
+                        const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const mCell = celda.match(new RegExp(`^${esc}\\s*:?\\s*(.*)$`, 'i'));
+                        if (mCell) {
+                            let valCelda = (mCell[1] || '').trim();
+                            if (!valCelda && c + 1 < celdas.length && !esEtiquetaConocida(celdas[c + 1])) {
+                                valCelda = celdas[c + 1];
+                                c++;
+                            }
+                            if (valCelda && !campos[etq]) {
+                                campos[etq] = valCelda;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (/^ACTUACIONES ORDEN CIRCUITO PRIVADO - Datos Atlas$/i.test(linea) || /^Informe de actuaciones$/i.test(linea)) {
+                seccion = 'INFORME';
+                informeActuacion.push(linea);
+                continue;
+            }
+            if (/^Ver Datos Portico$/i.test(linea)) {
+                informeActuacion.push(linea);
+                continue;
+            }
+            if (/^Datos generales$/i.test(linea)) { seccion = 'GENERAL'; continue; }
+            if (/^Datos orden$/i.test(linea)) { seccion = 'ORDEN'; continue; }
+            if (/^Datos circuito$/i.test(linea)) { seccion = 'CIRCUITO'; continue; }
+            if (/^Datos cliente$/i.test(linea)) { seccion = 'CLIENTE'; continue; }
+            if (/^Datos actuación$/i.test(linea)) { seccion = 'ACTUACION'; continue; }
+            if (/^Circuitos orden$/i.test(linea)) { seccion = 'CIRCUITOS_ORDEN'; continue; }
+            if (/^Trazado circuitos$/i.test(linea)) { seccion = 'TRAZADO_CIRCUITO'; continue; }
+            if (/^Equipos$/i.test(linea)) { seccion = 'EQUIPOS'; continue; }
+            if (/^Catálogo tarjetas$/i.test(linea)) { seccion = 'CATALOGO_TARJETAS'; continue; }
+            if (/^Facilid\. Cable$/i.test(linea)) { seccion = 'FACILID_CABLE'; continue; }
+            if (/^Facilid\. Grupo$/i.test(linea)) { seccion = 'FACILID_GRUPO'; continue; }
+            if (/^Terminales$/i.test(linea)) { seccion = 'TERMINALES'; continue; }
+            if (/^Equipos de abonado$/i.test(linea)) { seccion = 'EQUIPOS_ABONADO'; continue; }
+            if (/^(Notas|Datos Notas)$/i.test(linea)) { seccion = 'NOTAS'; continue; }
+            if (/^Datos (rpv\/sede|Centrex|Oficina|Rai|Ruta|LMDS|NOTA DATINT|Proyectos A Medida|Trazado Lógico|Ditra)/i.test(linea)) {
+                seccion = 'OTROS_BLOQUES';
+                continue;
+            }
+
+            let matchedEtq = null;
+            let inlineVal = '';
+
+            for (const etq of etiquetasAtlas) {
+                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const mColon = linea.match(new RegExp(`^${esc}\\s*:\\s*(.*)$`, 'i'));
+                if (mColon) {
+                    matchedEtq = etq;
+                    inlineVal = (mColon[1] || '').trim();
+                    break;
+                }
+                if (new RegExp(`^${esc}$`, 'i').test(linea)) {
+                    matchedEtq = etq;
+                    inlineVal = '';
+                    break;
+                }
+            }
+
+            if (matchedEtq) {
+                let valor = inlineVal;
+                if (!valor) {
+                    const res = extraerValorSiguiente(i + 1);
+                    if (res.val) {
+                        valor = res.val;
+                        i = res.nextIdx;
+                    }
+                }
+                if (!campos[matchedEtq] || valor) {
+                    campos[matchedEtq] = valor;
+                }
+                if (seccion === 'ACTUACION' && valor) {
+                    datosActuacionLista.push({ campo: matchedEtq, valor });
+                }
+                continue;
+            }
+
+            if (seccion === 'TRAZADO_CIRCUITO') {
+                if (/^(N° Sec\. Ct\.|Base o Resp\.|Loc\/T\.m\/T\.g|T\.Eqp\/Fac|Num\. Unidad|Term\.b\/Pta\.|Den\.A|Den\.Z|N-A Terminal A|Es PDCD->A|PDCD--)/i.test(linea)) continue;
+                trazadoCircuito.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'EQUIPOS') {
+                if (/^(N°|Sec\.|Ct\.|N° Sec\. Elem\/Fac\.|Localización|Código equipo|Número|N\. Elem\.|T\. Eqpo\.|Usuario|Posición repartidor|Term\. Grupo|Posición re)/i.test(linea)) continue;
+                equipos.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'CATALOGO_TARJETAS') {
+                if (/^(N° Sec\. Eq\/Tarj\.|Catálogo tarjetas|Pos\. Bast\. Aarr\.|Posición repartidor|Centro|Nu\. Sala|Bastidor Nu\. Bastidor|Nu\. Armazón|Coord\. Armazón Co)/i.test(linea)) continue;
+                catalogoTarjetas.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'FACILID_CABLE') {
+                if (/^(N° Sec\. Fac\. Cable\/Cto\.|N° Sec\. Fac\. Cable|Posición repartidor origen|Posición repartidor destino)/i.test(linea)) continue;
+                facilidCable.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'FACILID_GRUPO') {
+                if (/^(N° Sec\. Fac\. Grupo\/Cto\.|N° Sec\. Fac\.Grupo\/Cto\.|N° Sec\. Fac\. Grupo|Posición repartidor origen|Posición repartidor destino)/i.test(linea)) continue;
+                facilidGrupo.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'TERMINALES') {
+                if (/^(Terminal abonado A\/Z|Localiz\.|Usuario)$/i.test(linea)) continue;
+                terminales.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'EQUIPOS_ABONADO') {
+                if (/^(Terminal\.|Oper\.|T\. Eq\.|Propiet\.|Mnto\.|Suministrador|N° Serie|Descripción equipo)$/i.test(linea)) continue;
+                equiposAbonado.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'NOTAS') {
+                datosNotas.push(linea.replace(/\s*\|\s*/g, ' | '));
+                continue;
+            }
+            if (seccion === 'INFORME') {
+                informeActuacion.push(linea);
+                continue;
+            }
+
+            const mPair = linea.match(/^([A-Za-zÁÉÍÓÚÜÑ0-9 .()/°º_-]{2,45})\s*:\s*(.*)$/);
+            if (mPair) {
+                extrasAtlas.push({ seccion, campo: mPair[1].trim(), valor: mPair[2].trim() });
+            } else {
+                extrasAtlas.push({ seccion, campo: 'Detalle', valor: linea });
+            }
+        }
+
+        const textoNorm = lineas.join('\n');
+        if (!campos['N° Orden']) {
+            const mOrd = textoNorm.match(/(?:N°\s*Orden|Número de orden)\s*:?\s*\n?\s*([0-9]{6,})/i);
+            if (mOrd) campos['N° Orden'] = mOrd[1].trim();
+        }
+        if (!campos['N° Admtvo']) {
+            const mAdm = textoNorm.match(/N°\s*Admtvo\s*:?\s*\n?\s*([0-9]{8,})/i);
+            if (mAdm) campos['N° Admtvo'] = mAdm[1].trim();
+        }
+
+        const idxDatosCliente = lineas.findIndex(l => /^Datos cliente$/i.test(l));
+        if (idxDatosCliente !== -1) {
+            const finCliente = lineas.findIndex((l, idx) => idx > idxDatosCliente && /^(Datos actuación|Datos rpv\/sede|Trazado circuitos)$/i.test(l));
+            const bloqueCli = lineas.slice(idxDatosCliente + 1, finCliente === -1 ? idxDatosCliente + 30 : finCliente);
+
+            const valoresCli = bloqueCli.filter(l =>
+                l !== '|' &&
+                !esEtiquetaConocida(l.replace(/:\s*$/, '')) &&
+                !/^(Cliente|Dni\/Nif|Clase Serv\.|Dint\/O\.uso|APC|Ope\.\/Tit\.|Loc\. Origen|Loc\. Destino|Dire\. Origen del cliente|Dire\. Destino del cliente)\s*:/i.test(l)
+            );
+
+            const idxLocDestVal = valoresCli.findIndex(v => campos['Loc. Destino'] && v === campos['Loc. Destino']);
+            if (idxLocDestVal !== -1) {
+                if (!campos['Dire. Origen del cliente'] && valoresCli[idxLocDestVal + 1]) {
+                    campos['Dire. Origen del cliente'] = valoresCli[idxLocDestVal + 1];
+                }
+                if (!campos['Dire. Destino del cliente'] && valoresCli[idxLocDestVal + 2]) {
+                    campos['Dire. Destino del cliente'] = valoresCli[idxLocDestVal + 2];
+                }
+            } else {
+                const posiblesDirs = valoresCli.filter(v =>
+                    /^(AV|AVDA|CL|CALLE|PZ|PLAZA|CR|CTRA|COMPAS|PG|POL|TR|TRAV|RD|RONDA|PS|PASEO|CM|CAMINO)\b/i.test(v) ||
+                    /,\s*\d+/.test(v)
+                );
+                if (!campos['Dire. Origen del cliente'] && posiblesDirs[0]) {
+                    campos['Dire. Origen del cliente'] = posiblesDirs[0];
+                }
+                if (!campos['Dire. Destino del cliente'] && posiblesDirs[1]) {
+                    campos['Dire. Destino del cliente'] = posiblesDirs[1];
+                }
+            }
+        }
+
+        const nOrden = campos['N° Orden'] || campos['Número de orden'] || '';
+        const nAdmtvo = campos['N° Admtvo'] || '';
+        const tipoOrden = campos['T. Orden'] || '';
+        const estadoOrden = campos['Estado de la orden'] || '';
+        const obsOrden = campos['Obs. Orden'] || '';
+        const tCtEspec = campos['T. Ct. Espec.'] || '';
+        const velocidad = campos['Velocidad'] || '';
+        const clienteNombre = campos['Cliente'] || '';
+        const opeTit = campos['Ope./Tit.'] || '';
+        const locOrigen = campos['Loc. Origen'] || '';
+        const locDestino = campos['Loc. Destino'] || '';
+        const dirOrigenCliente = campos['Dire. Origen del cliente'] || '';
+        const dirDestinoCliente = campos['Dire. Destino del cliente'] || '';
+
+        const fechaBase = campos['F. Efect'] || campos['F. Compromiso'] || campos['F. Versión'] || campos['F. Obj. Calidad'] || '';
+        const fechaIso = fechaIsoDesdeTexto(fechaBase) || new Date().toISOString().split('T')[0];
+
+        const cliente = {
+            nombre: clienteNombre || opeTit || '',
+            telefono: '',
+            telefonoContacto: '',
+            direccion: dirOrigenCliente || dirDestinoCliente || '',
+            central: campos['Cod. Otro Sist.'] || '',
+            orden: nOrden,
+            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            observaciones: obsOrden || estadoOrden || ''
+        };
+
+        return {
+            id: 'ATLAS-' + (nOrden || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
+            tipo: 'atlas',
+            fecha: fechaIso,
+            notaActuacion: '',
+            notaActualizada: '',
+            cliente,
+            atlas: {
+                numeroOrden: nOrden, numeroAdmtvo: nAdmtvo, tipoOrden, estadoOrden, obsOrden,
+                tCtEspec, velocidad, cliente: clienteNombre, opeTit, locOrigen, locDestino,
+                dirOrigenCliente, dirDestinoCliente,
+                camposGenerales: campos, datosActuacion: datosActuacionLista,
+                trazadoCircuito, equipos, catalogoTarjetas, facilidCable, facilidGrupo,
+                terminales, equiposAbonado, datosNotas, informeActuacion, extras: extrasAtlas
+            },
+            rawTexto
+        };
+    }
+
+    function parsearBoletinTelco(rawTexto) {
+        const lineas = normalizarEntrada(rawTexto);
+
+        const etiquetasConocidas = [
+            'Orden de trabajo', 'Codigo tarea', 'Customer Order', 'Descripcion CO', 'Fecha',
+            'Telefono alta', 'Coordinado', 'Segmento', 'Subsegmento', 'Marca comercial',
+            'Portabilidad', 'Tecnologia', 'Indicador', 'Requiere cita', 'Central',
+            'Central Nombre', 'Titular', 'Domicilio', 'Poblacion', 'Unidad Funcional',
+            'Tipo de Trabajo', 'RFS Origen (productos actuales)', 'RFS Destino (productos a instalar)',
+            'Telefono movil', 'Correo Electronico', 'Otros telefonos', 'Productos Contratados',
+            'Datos generales de la asignacion', 'Id.ONT', 'Central Cab.', 'IP estatica',
+            'IUA', 'Numero', 'Tipo', 'Puerto', 'Vert.Comp.', 'N. Administrativo del tercero',
+            'Caja del operador propietario', 'Modelo CTO', 'Ubicacion', 'Tiene CD', 'Borna'
+        ];
+
+        const camposMap = {};
+        etiquetasConocidas.forEach(etq => { camposMap[etq] = ''; });
+
+        const extras = [];
+        let seccionActual = 'GENERAL';
+        const items = [];
+        const trazado = [];
+        const contactosExtra = [];
+
+        for (let i = 0; i < lineas.length; i++) {
+            const linea = lineas[i];
+
+            if (/^DATOS BASICOS$/i.test(linea)) { seccionActual = 'DATOS_BASICOS'; continue; }
+            if (/^DATOS CTO$/i.test(linea)) { seccionActual = 'DATOS_CTO'; continue; }
+            if (/^DATOS CD$/i.test(linea)) { seccionActual = 'DATOS_CD'; continue; }
+            if (/^ITEMS$/i.test(linea)) { seccionActual = 'ITEMS'; continue; }
+            if (/^Trazado\s*:/i.test(linea)) { seccionActual = 'TRAZADO'; continue; }
+            if (/^Datos de contacto\s*:/i.test(linea)) { seccionActual = 'CONTACTOS'; continue; }
+
+            if (seccionActual === 'ITEMS') {
+                if (/^Nombre activo$/i.test(linea) || /^Tipo de accion Categoria$/i.test(linea) || /^\|$/.test(linea)) {
+                    continue;
+                }
+                const limp = linea.replace(/^\|\s*/, '').replace(/\s*\|\s*$/, '').trim();
+                if (!limp) continue;
+
+                const partesPipe = limp.split(/\s*\|\s*|\s*\t+\s*/).filter(Boolean);
+                if (partesPipe.length >= 2) {
+                    const nombreActivo = partesPipe[0].trim();
+                    const resto = partesPipe.slice(1).join(' ').trim();
+                    const mAccCat = resto.match(/^(VERIFICAR|ALTA|BAJA|MODIFICACION|MODIFICACIÓN|PRUEBA|CONSULTA)\s+(.+)$/i);
+                    items.push({
+                        nombreActivo,
+                        tipoAccion: mAccCat ? mAccCat[1].toUpperCase() : resto,
+                        categoria: mAccCat ? mAccCat[2].trim() : ''
+                    });
+                    continue;
+                }
+
+                const siguiente1 = lineas[i + 1] || '';
+                const siguiente2 = lineas[i + 2] || '';
+                if (/^(VERIFICAR|ALTA|BAJA|MODIFICACION|MODIFICACIÓN|PRUEBA|CONSULTA)$/i.test(siguiente1)) {
+                    items.push({
+                        nombreActivo: limp,
+                        tipoAccion: siguiente1.toUpperCase(),
+                        categoria: siguiente2
+                    });
+                    i += 2;
+                    continue;
+                }
+
+                extras.push({ seccion: 'ITEMS', campo: 'Ítem', valor: limp });
+                continue;
+            }
+
+            if (seccionActual === 'TRAZADO') {
+                if (/^Recurso Especificador Categoria Valor$/i.test(linea)) continue;
+                const partes = linea.split(/\s*\|\s*|\s*\t+\s*/).filter(Boolean);
+                if (partes.length >= 2) {
+                    trazado.push({
+                        recurso: partes[0] || '',
+                        especificador: partes[1] || '',
+                        categoria: partes[2] || '',
+                        valor: partes.slice(3).join(' ') || ''
+                    });
+                } else {
+                    extras.push({ seccion: 'TRAZADO', campo: 'Trazado', valor: linea });
+                }
+                continue;
+            }
+
+            let matchedEtq = null;
+            let inlineVal = '';
+
+            for (const etq of etiquetasConocidas) {
+                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const reColon = new RegExp(`^${esc}\\s*:\\s*(.*)$`, 'i');
+                const mColon = linea.match(reColon);
+                if (mColon) {
+                    matchedEtq = etq;
+                    inlineVal = (mColon[1] || '').trim();
+                    break;
+                }
+                if (new RegExp(`^${esc}$`, 'i').test(linea)) {
+                    matchedEtq = etq;
+                    inlineVal = '';
+                    break;
+                }
+            }
+
+            if (matchedEtq) {
+                let valorFinal = inlineVal;
+                if (!valorFinal) {
+                    let j = i + 1;
+                    while (j < lineas.length && /^\|$/.test(lineas[j])) j++;
+                    if (j < lineas.length) {
+                        const cand = lineas[j].replace(/^\|\s*/, '').trim();
+                        const esOtraEtiqueta = etiquetasConocidas.some(e =>
+                            new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s*:)?$`, 'i').test(cand)
+                        ) || /^(DATOS BASICOS|DATOS CTO|DATOS CD|ITEMS|Trazado\s*:|Datos de contacto\s*:)$/i.test(cand);
+
+                        if (!esOtraEtiqueta) {
+                            valorFinal = cand;
+                            i = j;
+                        }
+                    }
+                }
+                if (matchedEtq === 'Numero' && seccionActual === 'DATOS_CTO') {
+                    camposMap['CTO Numero'] = valorFinal;
+                } else {
+                    camposMap[matchedEtq] = valorFinal;
+                }
+                continue;
+            }
+
+            const mGenerico = linea.match(/^([A-Za-zÁÉÍÓÚÜÑ0-9 .()/_-]{2,50})\s*:\s*(.*)$/);
+            if (mGenerico) {
+                const k = mGenerico[1].trim();
+                const v = mGenerico[2].trim();
+                if (seccionActual === 'CONTACTOS' && !etiquetasConocidas.some(e => e.toLowerCase() === k.toLowerCase())) {
+                    contactosExtra.push({ nombre: k, telefono: v });
+                } else if (!Object.prototype.hasOwnProperty.call(camposMap, k)) {
+                    extras.push({ seccion: seccionActual, campo: k, valor: v });
+                }
+                continue;
+            }
+
+            if (!/^\|$/.test(linea)) {
+                extras.push({ seccion: seccionActual, campo: 'Nota/Línea', valor: linea.replace(/^\|\s*/, '').trim() });
+            }
+        }
+
+        const fechaTexto = camposMap['Fecha'] || '';
+        const fechaIso = fechaIsoDesdeTexto(fechaTexto) || new Date().toISOString().split('T')[0];
+
+        const ordenTrabajoCompleta = camposMap['Orden de trabajo'] || '';
+        const woCorto = (ordenTrabajoCompleta.match(/^(WO\S+)/i) || [])[1] || ordenTrabajoCompleta;
+        const codigoTareaCompleta = camposMap['Codigo tarea'] || '';
+        const wkCorto = (codigoTareaCompleta.match(/^(WK\S+)/i) || [])[1] || codigoTareaCompleta;
+        const customerOrderCompleta = camposMap['Customer Order'] || '';
+        const coCorto = (customerOrderCompleta.match(/^(CO\S+)/i) || [])[1] || customerOrderCompleta;
+
+        const datosCto = {
+            numero: camposMap['CTO Numero'] || camposMap['Numero'] || '',
+            tipo: camposMap['Tipo'] || '',
+            puerto: camposMap['Puerto'] || '',
+            vertComp: camposMap['Vert.Comp.'] || '',
+            numAdminTercero: camposMap['N. Administrativo del tercero'] || '',
+            operadorPropietario: camposMap['Caja del operador propietario'] || '',
+            modelo: camposMap['Modelo CTO'] || '',
+            ubicacion: camposMap['Ubicacion'] || ''
+        };
+
+        const datosCd = {
+            tieneCd: camposMap['Tiene CD'] || '',
+            borna: camposMap['Borna'] || ''
+        };
+
+        const datosBasicos = {
+            asignacion: camposMap['Datos generales de la asignacion'] || '',
+            idOnt: camposMap['Id.ONT'] || '',
+            centralCab: camposMap['Central Cab.'] || '',
+            ipEstatica: camposMap['IP estatica'] || '',
+            iua: camposMap['IUA'] || ''
+        };
+
+        const contacto = {
+            titular: camposMap['Titular'] || '',
+            telefonoMovil: camposMap['Telefono movil'] || '',
+            correo: camposMap['Correo Electronico'] || '',
+            otrosTelefonos: camposMap['Otros telefonos'] || '',
+            contactosExtra
+        };
+
+        const cliente = {
+            nombre: camposMap['Titular'] || '',
+            telefono: camposMap['Telefono alta'] || camposMap['Telefono movil'] || '',
+            telefonoContacto: camposMap['Telefono movil'] || camposMap['Otros telefonos'] || '',
+            direccion: camposMap['Domicilio'] || '',
+            poblacion: camposMap['Poblacion'] || '',
+            central: camposMap['Central'] || '',
+            centralNombre: camposMap['Central Nombre'] || '',
+            orden: woCorto || coCorto || '',
+            anio: (fechaIso.match(/^(\d{4})/) || [])[1] || '',
+            observaciones: camposMap['Descripcion CO'] || camposMap['Tipo de Trabajo'] || ''
+        };
+
+        return {
+            id: 'TELCO-' + (woCorto || coCorto || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
+            tipo: 'telco_alta',
+            fecha: fechaIso,
+            fechaHoraOriginal: fechaTexto,
+            notaActuacion: '',
+            notaActualizada: '',
+            cliente,
+            telco: {
+                ordenTrabajo: ordenTrabajoCompleta, woCorto, codigoTarea: codigoTareaCompleta, wkCorto,
+                customerOrder: customerOrderCompleta, coCorto,
+                descripcionCO: camposMap['Descripcion CO'] || '', fecha: fechaTexto,
+                telefonoAlta: camposMap['Telefono alta'] || '', coordinado: camposMap['Coordinado'] || '',
+                segmento: camposMap['Segmento'] || '', subsegmento: camposMap['Subsegmento'] || '',
+                marcaComercial: camposMap['Marca comercial'] || '', portabilidad: camposMap['Portabilidad'] || '',
+                tecnologia: camposMap['Tecnologia'] || '', indicador: camposMap['Indicador'] || '',
+                requiereCita: camposMap['Requiere cita'] || '', central: camposMap['Central'] || '',
+                centralNombre: camposMap['Central Nombre'] || '', titular: camposMap['Titular'] || '',
+                domicilio: camposMap['Domicilio'] || '', poblacion: camposMap['Poblacion'] || '',
+                unidadFuncional: camposMap['Unidad Funcional'] || '', tipoTrabajo: camposMap['Tipo de Trabajo'] || '',
+                rfsOrigen: camposMap['RFS Origen (productos actuales)'] || '',
+                rfsDestino: camposMap['RFS Destino (productos a instalar)'] || '',
+                productosContratados: camposMap['Productos Contratados'] || '',
+                contacto, datosBasicos, datosCto, datosCd, items, trazado, extras
+            },
+            rawTexto
+        };
+    }
+
+    function parsearBoletinVisor(rawTexto) {
+        const lineas = normalizarEntrada(rawTexto);
+
+        const cliente = {
+            telefono: extraerCampoEtiqueta(lineas, 'Teléfono'),
+            anio: extraerCampoEtiqueta(lineas, 'Año'),
+            central: extraerCampoEtiqueta(lineas, 'Central').replace(/-\s*$/, '').trim(),
+            orden: extraerCampoEtiqueta(lineas, 'Orden'),
+            nombre: extraerCampoEtiqueta(lineas, 'Titular'),
+            direccion: extraerCampoEtiqueta(lineas, 'Domicilio'),
+            telefonoContacto: extraerCampoEtiqueta(lineas, 'Tel.Contacto'),
+            observaciones: extraerCampoEtiqueta(lineas, 'Observa'),
+            nif: extraerCampoEtiqueta(lineas, 'N.I.F.'),
+            fechaFormulacion: extraerCampoEtiqueta(lineas, 'F. Formulación'),
+            fechaEntrada: extraerCampoEtiqueta(lineas, 'F. Entrada')
+        };
+
+        const equipos = [];
+        let enSeccionEquipos = false;
+
+        for (const linea of lineas) {
+            if (/^Equipos$/i.test(linea)) {
+                enSeccionEquipos = true;
+                continue;
+            }
+            if (enSeccionEquipos && /^(Claves|CIRCUITOS|Asignación|Trazado|Acciones|Datos Interés)$/i.test(linea)) {
+                break;
+            }
+            if (!enSeccionEquipos) continue;
+            if (/^Op\b/i.test(linea) && /Equipo/i.test(linea) && /Material/i.test(linea)) continue;
+
+            const partesTab = linea.split(/\s*\t+\s*/).filter(Boolean);
+            let op = '', codigoEquipo = '', descripcion = '', unidades = '', material = '';
+
+            if (partesTab.length >= 4) {
+                if (/^[AY]$/i.test(partesTab[0])) {
+                    op = partesTab[0];
+                    if (/^[A-Z0-9]{4,6}$/i.test(partesTab[1])) {
+                        codigoEquipo = partesTab[1];
+                        descripcion = partesTab[2] || '';
+                        unidades = partesTab[3] || '';
+                        material = partesTab[4] || '';
+                    } else if (/^[A-Z0-9]{4,6}$/i.test(partesTab[2])) {
+                        codigoEquipo = partesTab[2];
+                        descripcion = partesTab[3] || '';
+                        unidades = partesTab[4] || '';
+                        material = partesTab[5] || '';
+                    }
+                }
+            }
+
+            if (!codigoEquipo) {
+                const m = linea.match(/^([AY])\s+(?:[A-Z0-9]+\s+)?([A-Z0-9]{4,6})\s+(.+?)\s+(\d+)(?:\s+(\d{4,}))?$/);
+                if (m) {
+                    op = m[1];
+                    codigoEquipo = m[2];
+                    descripcion = m[3].trim();
+                    unidades = m[4];
+                    material = m[5] || '';
+                }
+            }
+
+            if (codigoEquipo) {
+                equipos.push({
+                    op,
+                    codigo: codigoEquipo,
+                    descripcion,
+                    unidades,
+                    material,
+                    tieneMaterial: Boolean(material && material.trim() !== '')
+                });
+            }
+        }
+
+        const claves = [];
+        let subBloqueClave = 'GENERAL';
+        let enSeccionClaves = false;
+
+        for (let i = 0; i < lineas.length; i++) {
+            const linea = lineas[i];
+            if (/^Claves$/i.test(linea)) {
+                enSeccionClaves = true;
+                continue;
+            }
+            if (enSeccionClaves && /^(CIRCUITOS|Asignación|Trazado|Puentes no mantenidos|Acciones|Datos Interés|Datos enlace Movil|Notas)$/i.test(linea)) {
+                break;
+            }
+            if (!enSeccionClaves) continue;
+
+            if (/^Op\b/i.test(linea) && /Clave/i.test(linea) && /Datos clave/i.test(linea)) {
+                continue;
+            }
+
+            const mClave = linea.match(/^(?:([AY])\s+)?([A-Z0-9]{1,3}\s*-\s*)\s+(.+)$/);
+            if (mClave) {
+                claves.push({
+                    bloque: subBloqueClave,
+                    op: (mClave[1] || '').trim(),
+                    clave: mClave[2].replace(/\s+/g, ' ').trim(),
+                    valor: mClave[3].replace(/\s*\t+\s*/g, ' | ').trim()
+                });
+                continue;
+            }
+
+            if (/^(DATOS EQUIPOS|DATOS VISITA|IDENTIFICADOR ORDEN|OTROS DATOS|DATOS CONTACTO|DETALLE DE ACTUACIONES|DIRECCIONAMIENTOS IP|INSTALACION [A-Z0-9/ ]+)$/i.test(linea)) {
+                subBloqueClave = linea.trim();
+            }
+        }
+
+        const datosInteres = [];
+        let enDatosInteres = false;
+        const etiquetasInteres = [
+            'Entrega/Recogida de material', 'Necesita prueba final', 'Fecha estandar',
+            'Actuacion domiciliaria', 'Necesario reservar Agenda', 'Trabajos en central',
+            'Necesita diagnostico externo', 'Estado IUA', 'Instalar acometida fibra',
+            'Prioridad', 'Tipo CAE', 'Interlocutor CAE Cliente'
+        ];
+
+        for (let i = 0; i < lineas.length; i++) {
+            const linea = lineas[i];
+            if (/^Datos Interés$/i.test(linea)) {
+                enDatosInteres = true;
+                continue;
+            }
+            if (enDatosInteres && /^(Datos enlace Movil|Notas|CIRCUITOS|Asignación)$/i.test(linea)) {
+                break;
+            }
+            if (!enDatosInteres) continue;
+
+            const partesTab = linea.split(/\s*\t+\s*/).filter(Boolean);
+            if (partesTab.length >= 2) {
+                datosInteres.push({
+                    campo: partesTab[0].trim(),
+                    valor: partesTab.slice(1).join(' ').trim()
+                });
+                continue;
+            }
+
+            for (const etq of etiquetasInteres) {
+                const esc = etq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const re = new RegExp(`^${esc}\\s*(.*)$`, 'i');
+                const m = linea.match(re);
+                if (m) {
+                    datosInteres.push({
+                        campo: etq,
+                        valor: (m[1] || '').trim()
+                    });
+                    break;
+                }
+            }
+        }
+
+        const fechaOrden = fechaIsoDesdeTexto(cliente.fechaFormulacion) ||
+            fechaIsoDesdeTexto(cliente.fechaEntrada) ||
+            cliente.fechaFormulacion ||
+            cliente.fechaEntrada ||
+            new Date().toISOString().split('T')[0];
+
+        return {
+            id: 'VISOR-' + (cliente.orden || Date.now()) + '-' + Math.random().toString(36).slice(2, 6),
+            tipo: 'visor',
+            fecha: fechaOrden,
+            notaActuacion: '',
+            notaActualizada: '',
+            cliente,
+            equipos,
+            claves,
+            datosInteres,
+            rawTexto
+        };
+    }
+
+    function procesarOrden() {
+        const raw = document.getElementById('txtBruto').value.trim();
+        if (!raw) {
+            alert('Pega primero el contenido de una orden o avería.');
             return;
         }
 
-        try {
-            const nuevaOrden = parsearTextoBoletin(textoBruto);
-            let db = JSON.parse(localStorage.getItem('db_ordenes_v3'));
-            db.push(nuevaOrden);
-            db.sort((a, b) => new Date(b.fechaInstalacion) - new Date(a.fechaInstalacion));
-            localStorage.setItem('db_ordenes_v3', JSON.stringify(db));
-
-            document.getElementById('txtBruto').value = "";
-            listarOrdenes();
-            alert("¡Boletín analizado. Segmentos IP guardados en columnas exclusivas!");
-        } catch (error) {
-            alert("Ocurrió un percance al analizar las cadenas de texto.");
-            console.error(error);
+        const lineas = normalizarEntrada(raw);
+        let orden;
+        if (esBoletinSam(raw, lineas)) {
+            orden = parsearAveriaSam(raw);
+        } else if (esBoletinAtlas(raw, lineas)) {
+            orden = parsearBoletinAtlas(raw);
+        } else if (esBoletinTelco(raw, lineas)) {
+            orden = parsearBoletinTelco(raw);
+        } else {
+            orden = parsearBoletinVisor(raw);
         }
+
+        const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        db.unshift(orden);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+
+        document.getElementById('txtBruto').value = '';
+        listarOrdenes();
     }
 
-    function listarOrdenes(datosFiltrados = null) {
-        const db = datosFiltrados || JSON.parse(localStorage.getItem('db_ordenes_v3'));
+    function escapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function renderListaTexto(arr, vacioTexto = 'Sin registros') {
+        if (!arr || !arr.length) return `<span class="text-small">${escapeHtml(vacioTexto)}</span>`;
+        return arr.map(item => `<div class="clave-item mono-dato">${escapeHtml(item)}</div>`).join('');
+    }
+
+    function renderCeldaNotasTabla(orden) {
+        const notaActual = orden.notaActuacion || '';
+        const fechaNota = orden.notaActualizada ? `Actualizado: ${escapeHtml(orden.notaActualizada)}` : '';
+        return `
+            <div class="nota-box-tabla" onclick="event.stopPropagation()">
+                <div class="nota-guardada-texto" id="nota-vista-${escapeHtml(orden.id)}">${escapeHtml(notaActual.trim() ? notaActual : 'Sin notas de actuación todavía.')}</div>
+                <textarea class="nota-input-fila" id="nota-input-${escapeHtml(orden.id)}" placeholder="Escribe qué se ha hecho en esta actuación...">${escapeHtml(notaActual)}</textarea>
+                <div class="nota-acciones-fila">
+                    <button type="button" class="btn-success btn-sm" onclick="guardarNotaActuacion('${escapeHtml(orden.id)}', document.getElementById('nota-input-${escapeHtml(orden.id)}').value, 'tabla')">Guardar Nota</button>
+                    <span class="estado-guardado" id="nota-estado-${escapeHtml(orden.id)}">${fechaNota}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderBloqueNotasModal(orden) {
+        const notaActual = orden.notaActuacion || '';
+        const fechaNota = orden.notaActualizada ? `Última actualización: ${escapeHtml(orden.notaActualizada)}` : '';
+        return `
+            <div class="detalle-seccion">
+                <h3>Notas de Actuación Realizada</h3>
+                <textarea id="modal-nota-textarea" style="height:110px; color:#f9e2af;" placeholder="Anota aquí los trabajos realizados, pruebas, lecturas, materiales o incidencias de esta actuación...">${escapeHtml(notaActual)}</textarea>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <button type="button" class="btn-success" onclick="guardarNotaActuacion('${escapeHtml(orden.id)}', document.getElementById('modal-nota-textarea').value, 'modal')">Guardar Nota de Actuación</button>
+                    <span id="modal-nota-estado" class="estado-guardado">${fechaNota}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function listarOrdenes(lista = null) {
+        const db = lista || JSON.parse(localStorage.getItem(STORAGE_KEY));
         const tbody = document.getElementById('tbodyOrdenes');
-        tbody.innerHTML = "";
+        tbody.innerHTML = '';
 
         if (db.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No hay registros guardados.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888; padding:24px;">No hay registros guardados.</td></tr>`;
             return;
         }
 
         db.forEach(orden => {
-            let badgeClass = "badge-visor";
-            if(orden.linea.tipo.includes("san")) badgeClass = "badge-san";
-            else if(orden.linea.tipo.includes("wines")) badgeClass = "badge-wines";
-            else if(orden.linea.tipo.includes("telco")) badgeClass = "badge-telco";
+            const tr = document.createElement('tr');
+            tr.className = 'fila-orden';
+            tr.onclick = () => abrirModalOrden(orden.id);
 
-            let listaEquiposHtml = orden.equipos.map(eq => `• ${eq}`).join('<br>');
+            let celdasHtml = '';
 
-            let fila = `
-                <tr>
-                    <td><strong>${orden.fechaInstalacion}</strong></td>
+            if (orden.tipo === 'sam_averia') {
+                const s = orden.sam || {};
+                const logHtml = (s.logistica && s.logistica.length)
+                    ? s.logistica.map(lg => `<div class="item-sam">
+                        <strong>${escapeHtml(lg.contratable)}</strong>
+                        <br><span class="text-small">${escapeHtml(lg.regimen)} · Uds: ${escapeHtml(lg.uds)}</span>
+                    </div>`).join('')
+                    : '';
+
+                const diagHtml = `
+                    ${s.sintoma ? `<div class="item-sam"><strong>Síntoma:</strong> ${escapeHtml(s.sintoma)}</div>` : ''}
+                    ${s.diagnostico ? `<div class="text-small"><strong>Diagnóstico:</strong> ${escapeHtml(s.diagnostico)}</div>` : ''}
+                    ${s.repu ? `<div class="text-small"><strong>REPU:</strong> <span class="mono-dato">${escapeHtml(s.repu)}</span></div>` : ''}
+                    ${logHtml}
+                ` || `<span class="text-small">Sin diagnóstico</span>`;
+
+                const clavesSamHtml = `<div class="claves-casilla-ampliada">
+                    <div class="clave-item mono-dato"><strong>F.Reclamación:</strong> ${escapeHtml(s.fReclamacion || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>F.Entrada:</strong> ${escapeHtml(s.fEntrada || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>F.Prevista:</strong> ${escapeHtml(s.fPrevista || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Tfno.Contacto:</strong> ${escapeHtml(s.tfnoContacto || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Coordinador:</strong> ${escapeHtml(s.coordinador || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Horario Lab.:</strong> ${escapeHtml(s.laborables || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Obs. Prueba:</strong> ${escapeHtml(s.obsPrueba || '-')}</div>
+                </div>`;
+
+                const estadoSamHtml = `
+                    <div class="text-small"><strong>Prioridad:</strong> ${escapeHtml(s.prioridad || '-')} · <strong>Peso:</strong> ${escapeHtml(s.pesoTotal || '-')}</div>
+                    <div class="text-small"><strong>Repetidas:</strong> ${escapeHtml(s.nRepetidas || '-')} · <strong>Incid.:</strong> ${escapeHtml(s.incidencia || '-')}</div>
+                    <div class="text-small"><strong>Premasiva:</strong> ${escapeHtml(s.premasiva || '-')} · <strong>Incom.:</strong> ${escapeHtml(s.incomunicacion || '-')}</div>
+                    <div class="text-small" style="color:#89b4fa; margin-top:4px;"><strong>Area:</strong> ${escapeHtml(s.areaPlanta || '-')}</div>
+                `;
+
+                celdasHtml = `
                     <td>
-                        <strong>${orden.cliente.nombre}</strong><br>
-                        <span class="text-small">NIF: ${orden.cliente.nif}</span><br>
-                        <span class="text-small">Tel: ${orden.cliente.telefono}</span>
+                        <span class="badge badge-sam">AVERÍA SAM</span><br>
+                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <span class="text-small">SEG: ${escapeHtml(s.seg || '-')}</span>
                     </td>
-                    <td style="color:#f9e2af; font-size:12px;">${listaEquiposHtml}</td>
                     <td>
-                        <span class="badge ${badgeClass}">${orden.linea.tipo.toUpperCase()}</span><br>
-                        <small style="color:#aaa;">N°: ${orden.numeroOrden}</small>
+                        <strong>${escapeHtml(s.nombreCliente || 'Sin cliente')}</strong><br>
+                        <span class="text-small"><strong>Id. Avería:</strong> ${escapeHtml(s.idAveria || '-')}</span><br>
+                        <span class="text-small"><strong>TEL:</strong> ${escapeHtml(s.tel || '-')} | <strong>Central:</strong> ${escapeHtml(s.central || '-')}</span><br>
+                        <span class="text-small"><strong>DNI/CIF:</strong> ${escapeHtml(s.dniCif || '-')}</span><br>
+                        <span class="text-small"><strong>Domicilio:</strong> ${escapeHtml(s.domicilioPostal || '-')}</span>
                     </td>
-                    <td class="ip-cell">${orden.linea.ipWan}</td>
-                    <td class="ip-cell">${orden.linea.ipLan}</td>
-                    <td style="font-size:12px; color:#b4b4bb;">${orden.linea.observaciones}</td>
-                </tr>
-            `;
-            tbody.innerHTML += fila;
+                    <td>${diagHtml}</td>
+                    <td class="col-claves">${clavesSamHtml}</td>
+                    <td>${estadoSamHtml}</td>
+                `;
+            } else if (orden.tipo === 'atlas') {
+                const a = orden.atlas || {};
+                const actResumen = (a.datosActuacion || []).slice(0, 5)
+                    .map(d => `<div class="clave-item mono-dato"><strong>${escapeHtml(d.campo)}:</strong> ${escapeHtml(d.valor)}</div>`).join('');
+
+                const clavesAtlasHtml = `<div class="claves-casilla-ampliada">
+                    <div class="clave-item mono-dato"><strong>T. Ct. Espec.:</strong> ${escapeHtml(a.tCtEspec || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Velocidad:</strong> ${escapeHtml(a.velocidad || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Loc. Origen:</strong> ${escapeHtml(a.locOrigen || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Loc. Destino:</strong> ${escapeHtml(a.locDestino || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Dir. Origen:</strong> ${escapeHtml(a.dirOrigenCliente || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Dir. Destino:</strong> ${escapeHtml(a.dirDestinoCliente || '-')}</div>
+                    ${actResumen}
+                </div>`;
+
+                const equiposAtlasHtml = `
+                    ${(a.equipos && a.equipos.length) ? `<div class="item-atlas"><strong>Equipos:</strong> ${a.equipos.length} registro(s)</div>` : ''}
+                    ${(a.trazadoCircuito && a.trazadoCircuito.length) ? `<div class="item-atlas"><strong>Trazado circuito:</strong> ${a.trazadoCircuito.length} tramo(s)</div>` : ''}
+                    ${(a.catalogoTarjetas && a.catalogoTarjetas.length) ? `<div class="item-atlas"><strong>Catálogo tarjetas:</strong> ${a.catalogoTarjetas.length}</div>` : ''}
+                    ${(a.facilidCable && a.facilidCable.length) ? `<div class="item-atlas"><strong>Facilid. Cable:</strong> ${a.facilidCable.length}</div>` : ''}
+                    ${(a.facilidGrupo && a.facilidGrupo.length) ? `<div class="item-atlas"><strong>Facilid. Grupo:</strong> ${a.facilidGrupo.length}</div>` : ''}
+                    ${(a.equiposAbonado && a.equiposAbonado.length) ? `<div class="item-atlas"><strong>Eq. Abonado:</strong> ${a.equiposAbonado.length}</div>` : ''}
+                ` || `<span class="text-small">Sin elementos</span>`;
+
+                const estadoNotasHtml = `
+                    <div class="text-small"><strong>T. Orden:</strong> ${escapeHtml(a.tipoOrden || '-')} · <strong>Estado:</strong> ${escapeHtml(a.estadoOrden || '-')}</div>
+                    <div class="text-small" style="color:#89b4fa; margin-top:4px;"><strong>Obs. Orden:</strong> ${escapeHtml(a.obsOrden || '-')}</div>
+                    ${(a.datosNotas && a.datosNotas.length) ? `<div class="text-small mono-dato" style="margin-top:4px;">${escapeHtml(a.datosNotas.slice(0, 2).join(' | '))}</div>` : ''}
+                `;
+
+                celdasHtml = `
+                    <td>
+                        <span class="badge badge-atlas">ATLAS</span><br>
+                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(a.cliente || 'Sin cliente')}</strong><br>
+                        <span class="text-small"><strong>N° Orden:</strong> ${escapeHtml(a.numeroOrden || '-')}</span><br>
+                        <span class="text-small"><strong>N° Admtvo:</strong> ${escapeHtml(a.numeroAdmtvo || '-')}</span><br>
+                        <span class="text-small"><strong>Ope./Tit.:</strong> ${escapeHtml(a.opeTit || '-')}</span><br>
+                        <span class="text-small"><strong>Dir. Orig:</strong> ${escapeHtml(a.dirOrigenCliente || '-')}</span><br>
+                        <span class="text-small"><strong>Dir. Dest:</strong> ${escapeHtml(a.dirDestinoCliente || '-')}</span>
+                    </td>
+                    <td>${equiposAtlasHtml}</td>
+                    <td class="col-claves">${clavesAtlasHtml}</td>
+                    <td>${estadoNotasHtml}</td>
+                `;
+            } else if (orden.tipo === 'telco_alta') {
+                const t = orden.telco || {};
+                const bas = t.datosBasicos || {};
+                const cto = t.datosCto || {};
+                const cd = t.datosCd || {};
+                const cont = t.contacto || {};
+
+                const itemsHtml = (t.items && t.items.length)
+                    ? t.items.map(it => `<div class="item-telco">
+                        <strong>${escapeHtml(it.nombreActivo)}</strong>
+                        <br><span class="text-small">${escapeHtml(it.tipoAccion)} · ${escapeHtml(it.categoria)}</span>
+                    </div>`).join('')
+                    : `<span class="text-small">Sin ítems</span>`;
+
+                const rfsHtml = `
+                    ${t.rfsDestino ? `<div class="mat-tag">RFS: ${escapeHtml(t.rfsDestino)}</div>` : ''}
+                    ${t.tipoTrabajo ? `<div class="text-small" style="margin-top:4px;"><strong>Trabajo:</strong> ${escapeHtml(t.tipoTrabajo)}</div>` : ''}
+                `;
+
+                const clavesTelcoHtml = `<div class="claves-casilla-ampliada">
+                    <div class="clave-item mono-dato"><strong>IUA:</strong> ${escapeHtml(bas.iua || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>ONT:</strong> ${escapeHtml(bas.idOnt || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>IP Estática:</strong> ${escapeHtml(bas.ipEstatica || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Asignación:</strong> ${escapeHtml(bas.asignacion || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>CTO:</strong> ${escapeHtml(cto.numero || '-')} (${escapeHtml(cto.tipo || '-')}) · Pto ${escapeHtml(cto.puerto || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Ubicación CTO:</strong> ${escapeHtml(cto.ubicacion || '-')} · ${escapeHtml(cto.modelo || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>Op. CTO:</strong> ${escapeHtml(cto.operadorPropietario || '-')}</div>
+                    <div class="clave-item mono-dato"><strong>CD:</strong> ${escapeHtml(cd.tieneCd || '-')} · Borna: ${escapeHtml(cd.borna || '-')}</div>
+                </div>`;
+
+                const contactoHtml = `
+                    <div class="text-small"><strong>Alta:</strong> ${escapeHtml(t.telefonoAlta || '-')}</div>
+                    <div class="text-small"><strong>Móvil:</strong> ${escapeHtml(cont.telefonoMovil || '-')}</div>
+                    <div class="text-small"><strong>Email:</strong> ${escapeHtml(cont.correo || '-')}</div>
+                    <div class="text-small"><strong>Cita:</strong> ${escapeHtml(t.requiereCita || '-')} · <strong>Coord:</strong> ${escapeHtml(t.coordinado || '-')}</div>
+                    <div class="text-small"><strong>Seg:</strong> ${escapeHtml(t.segmento || '-')} (${escapeHtml(t.subsegmento || '-')})</div>
+                `;
+
+                celdasHtml = `
+                    <td>
+                        <span class="badge badge-telco">TELCO ALTA</span><br>
+                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <span class="text-small">${escapeHtml(t.fecha || '')}</span>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(t.titular || 'Sin titular')}</strong><br>
+                        <span class="text-small"><strong>WO:</strong> ${escapeHtml(t.woCorto || '-')}</span><br>
+                        <span class="text-small"><strong>WK:</strong> ${escapeHtml(t.wkCorto || '-')}</span><br>
+                        <span class="text-small"><strong>CO:</strong> ${escapeHtml(t.coCorto || '-')}</span><br>
+                        <span class="text-small"><strong>Central:</strong> ${escapeHtml(t.central || '-')} (${escapeHtml(t.centralNombre || '-')})</span><br>
+                        <span class="text-small"><strong>Dir:</strong> ${escapeHtml(t.domicilio || '-')} (${escapeHtml(t.poblacion || '-')})</span><br>
+                        <span class="text-small" style="color:#89b4fa;"><strong>CO Desc:</strong> ${escapeHtml(t.descripcionCO || '-')}</span>
+                    </td>
+                    <td>${itemsHtml}${rfsHtml}</td>
+                    <td class="col-claves">${clavesTelcoHtml}</td>
+                    <td>${contactoHtml}</td>
+                `;
+            } else {
+                const equiposHtml = (orden.equipos && orden.equipos.length)
+                    ? orden.equipos.map(eq => {
+                        if (eq.tieneMaterial) {
+                            return `<div class="eq-con-material">
+                                <strong>${escapeHtml(eq.codigo)}</strong> - ${escapeHtml(eq.descripcion)}
+                                <br><span class="mat-tag">MATERIAL: ${escapeHtml(eq.material)}</span>
+                            </div>`;
+                        }
+                        return `<div class="eq-sin-material">${escapeHtml(eq.codigo)} - ${escapeHtml(eq.descripcion)}</div>`;
+                    }).join('')
+                    : `<span class="text-small">Sin equipos detectados</span>`;
+
+                const clavesHtml = (orden.claves && orden.claves.length)
+                    ? `<div class="claves-casilla-ampliada">` +
+                        orden.claves.map(c =>
+                            `<div class="clave-item mono-dato"><strong>${escapeHtml(c.clave)}</strong> ${escapeHtml(c.valor)}</div>`
+                        ).join('') +
+                      `</div>`
+                    : `<span class="text-small">Sin claves</span>`;
+
+                const interesHtml = (orden.datosInteres && orden.datosInteres.length)
+                    ? orden.datosInteres.slice(0, 6).map(d => `<div class="text-small"><strong>${escapeHtml(d.campo)}:</strong> ${escapeHtml(d.valor || '-')}</div>`).join('')
+                    : `<span class="text-small">Sin datos de interés</span>`;
+
+                celdasHtml = `
+                    <td>
+                        <span class="badge badge-visor">VISOR</span><br>
+                        <strong>${escapeHtml(orden.fecha || '-')}</strong><br>
+                        <span class="text-small">Año: ${escapeHtml(orden.cliente.anio || '-')}</span>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(orden.cliente.nombre || 'Sin titular')}</strong><br>
+                        <span class="text-small"><strong>Orden:</strong> ${escapeHtml(orden.cliente.orden || '-')} | <strong>Central:</strong> ${escapeHtml(orden.cliente.central || '-')}</span><br>
+                        <span class="text-small"><strong>Tel:</strong> ${escapeHtml(orden.cliente.telefono || '-')} | <strong>Contacto:</strong> ${escapeHtml(orden.cliente.telefonoContacto || '-')}</span><br>
+                        <span class="text-small"><strong>Dir:</strong> ${escapeHtml(orden.cliente.direccion || '-')}</span><br>
+                        <span class="text-small" style="color:#89b4fa;"><strong>Obs:</strong> ${escapeHtml(orden.cliente.observaciones || '-')}</span>
+                    </td>
+                    <td>${equiposHtml}</td>
+                    <td class="col-claves">${clavesHtml}</td>
+                    <td>${interesHtml}</td>
+                `;
+            }
+
+            tr.innerHTML = celdasHtml + `<td class="col-notas">${renderCeldaNotasTabla(orden)}</td>`;
+            tbody.appendChild(tr);
         });
     }
 
+    function abrirModalOrden(id) {
+        const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        const orden = db.find(o => o.id === id);
+        if (!orden) return;
+
+        const bloqueNotas = renderBloqueNotasModal(orden);
+
+        if (orden.tipo === 'sam_averia') {
+            const s = orden.sam || {};
+            document.getElementById('modalTitulo').textContent =
+                `Avería SAM ${s.idAveria || ''} — ${s.nombreCliente || 'Cliente'}`;
+
+            const logFilas = (s.logistica || []).map(lg => `
+                <tr>
+                    <td class="mono-dato">${escapeHtml(lg.codigo)}</td>
+                    <td>${escapeHtml(lg.ps)}</td>
+                    <td><strong>${escapeHtml(lg.contratable)}</strong></td>
+                    <td>${escapeHtml(lg.regimen)}</td>
+                    <td>${escapeHtml(lg.uds)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('modalContenido').innerHTML = `
+                ${bloqueNotas}
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Identificación y Cliente</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Id. Avería</div><div class="mono-dato"><strong>${escapeHtml(s.idAveria || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">TEL</div><div class="mono-dato"><strong>${escapeHtml(s.tel || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">CENTRAL</div><div class="mono-dato">${escapeHtml(s.central || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">SEG</div><div>${escapeHtml(s.seg || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">DNI/CIF</div><div class="mono-dato">${escapeHtml(s.dniCif || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Area de planta</div><div>${escapeHtml(s.areaPlanta || '-')}</div></div>
+                            <div class="kv-item" style="grid-column: 1 / -1;"><div class="text-small">Domicilio postal</div><div>${escapeHtml(s.domicilioPostal || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">F.Reclamación</div><div class="mono-dato">${escapeHtml(s.fReclamacion || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">F.Entrada</div><div class="mono-dato">${escapeHtml(s.fEntrada || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">F.Prevista</div><div class="mono-dato">${escapeHtml(s.fPrevista || '-')}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Datos Prueba y Observaciones</h3>
+                        <p><strong>Síntoma:</strong> <span class="mat-tag">${escapeHtml(s.sintoma || '-')}</span></p>
+                        <p><strong>Diagnóstico:</strong> ${escapeHtml(s.diagnostico || '-')}</p>
+                        <p><strong>REPU:</strong> <span class="mono-dato">${escapeHtml(s.repu || '-')}</span> &nbsp;|&nbsp; <strong>SSD:</strong> <span class="mono-dato">${escapeHtml(s.ssd || '-')}</span></p>
+                        <p><strong>Observaciones de Cliente:</strong> <div class="raw-box" style="max-height:110px;">${escapeHtml(s.obsCliente || '-')}</div></p>
+                        <p style="margin-top:8px;"><strong>OBSERVACIONES PRUEBA:</strong> <div class="raw-box" style="max-height:90px;">${escapeHtml(s.obsPrueba || '-')}</div></p>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Logística (${(s.logistica || []).length})</h3>
+                    <table>
+                        <thead><tr><th>P/S / Ref</th><th>Cod.</th><th>Contratable</th><th>Régimen</th><th>Uds.</th></tr></thead>
+                        <tbody>${logFilas || '<tr><td colspan="5">Sin registros de logística</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Datos Contacto</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Laborables</div><div class="mono-dato">${escapeHtml(s.laborables || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Sábados</div><div class="mono-dato">${escapeHtml(s.sabados || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Festivos</div><div class="mono-dato">${escapeHtml(s.festivos || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Coordinador</div><div>${escapeHtml(s.coordinador || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Tfno.Contacto</div><div class="mono-dato">${escapeHtml(s.tfnoContacto || '-')}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Datos Avería</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">N.Repetidas</div><div>${escapeHtml(s.nRepetidas || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Incidencia</div><div>${escapeHtml(s.incidencia || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Reiteraciones</div><div>${escapeHtml(s.reiteraciones || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Prioridad / Peso Total</div><div class="mono-dato">${escapeHtml(s.prioridad || '-')} / ${escapeHtml(s.pesoTotal || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Fecha Cita</div><div>${escapeHtml(s.fechaCita || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Premasiva / Incomunicación</div><div>${escapeHtml(s.premasiva || '-')} / ${escapeHtml(s.incomunicacion || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Cód. Masiva / Fuerza Mayor</div><div>${escapeHtml(s.codMasiva || '-')} / ${escapeHtml(s.fuerzaMayor || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Núm. Masiva / Afec.S.Univ.</div><div>${escapeHtml(s.numMasiva || '-')} / ${escapeHtml(s.afecSUniv || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Acepta Pago / Parada Reloj</div><div>${escapeHtml(s.aceptaPago || '-')} / ${escapeHtml(s.paradaReloj || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">T.Total / Plan Choque / T.Imput</div><div class="mono-dato">${escapeHtml(s.tTotal || '-')} / ${escapeHtml(s.planChoque || '-')} / ${escapeHtml(s.tImput || '-')}</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Asignación</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(s.asignacionLineas, 'Sin asignación')}</div>
+                    </div>
+                    <div class="detalle-seccion">
+                        <h3>Trazado ADSL</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(s.trazadoAdslLineas, 'Sin trazado ADSL')}</div>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Texto Original Capturado</h3>
+                    <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
+                </div>
+            `;
+        } else if (orden.tipo === 'atlas') {
+            const a = orden.atlas || {};
+            document.getElementById('modalTitulo').textContent =
+                `Orden Atlas ${a.numeroOrden || ''} — ${a.cliente || 'Cliente'}`;
+
+            const actFilas = (a.datosActuacion || []).map(d => `
+                <tr>
+                    <td><strong>${escapeHtml(d.campo)}</strong></td>
+                    <td class="mono-dato">${escapeHtml(d.valor)}</td>
+                </tr>
+            `).join('');
+
+            const extrasFilas = (a.extras || []).map(ex => `
+                <tr>
+                    <td><span class="text-small">${escapeHtml(ex.seccion)}</span></td>
+                    <td><strong>${escapeHtml(ex.campo)}</strong></td>
+                    <td class="mono-dato">${escapeHtml(ex.valor)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('modalContenido').innerHTML = `
+                ${bloqueNotas}
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Datos Generales, Orden y Circuito</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">N° Orden</div><div class="mono-dato"><strong>${escapeHtml(a.numeroOrden || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">N° Admtvo</div><div class="mono-dato"><strong>${escapeHtml(a.numeroAdmtvo || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">Tipo de orden (T. Orden)</div><div><strong>${escapeHtml(a.tipoOrden || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">Estado de la orden</div><div><strong>${escapeHtml(a.estadoOrden || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">T. Ct. Espec.</div><div class="mono-dato">${escapeHtml(a.tCtEspec || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Velocidad</div><div class="mono-dato"><strong>${escapeHtml(a.velocidad || '-')}</strong></div></div>
+                            <div class="kv-item" style="grid-column: 1 / -1;"><div class="text-small">Observaciones orden (Obs. Orden)</div><div class="mono-dato">${escapeHtml(a.obsOrden || '-')}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Cliente, Operador y Direcciones</h3>
+                        <p><strong>Cliente:</strong> ${escapeHtml(a.cliente || '-')}</p>
+                        <p><strong>Ope./Tit.:</strong> ${escapeHtml(a.opeTit || '-')}</p>
+                        <p><strong>Loc. Origen:</strong> <span class="mono-dato">${escapeHtml(a.locOrigen || '-')}</span></p>
+                        <p><strong>Loc. Destino:</strong> <span class="mono-dato">${escapeHtml(a.locDestino || '-')}</span></p>
+                        <p><strong>Dirección origen de cliente:</strong> <span class="mono-dato">${escapeHtml(a.dirOrigenCliente || '-')}</span></p>
+                        <p><strong>Dirección destino cliente:</strong> <span class="mono-dato">${escapeHtml(a.dirDestinoCliente || '-')}</span></p>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Datos de actuación</h3>
+                    <table>
+                        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+                        <tbody>${actFilas || '<tr><td colspan="2">Sin datos de actuación</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Trazado del circuito (${(a.trazadoCircuito || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.trazadoCircuito, 'Sin trazado de circuito')}</div>
+                    </div>
+                    <div class="detalle-seccion">
+                        <h3>Equipos (${(a.equipos || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.equipos, 'Sin equipos')}</div>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Catálogo de tarjetas (${(a.catalogoTarjetas || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.catalogoTarjetas, 'Sin catálogo de tarjetas')}</div>
+                    </div>
+                    <div class="detalle-seccion">
+                        <h3>Facilidad de cable (${(a.facilidCable || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.facilidCable, 'Sin facilidad de cable')}</div>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Facilidad grupo (${(a.facilidGrupo || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.facilidGrupo, 'Sin facilidad de grupo')}</div>
+                    </div>
+                    <div class="detalle-seccion">
+                        <h3>Terminales (${(a.terminales || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.terminales, 'Sin terminales')}</div>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Equipos de abonados (${(a.equiposAbonado || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.equiposAbonado, 'Sin equipos de abonados')}</div>
+                    </div>
+                    <div class="detalle-seccion">
+                        <h3>Datos notas (${(a.datosNotas || []).length})</h3>
+                        <div class="claves-casilla-ampliada">${renderListaTexto(a.datosNotas, 'Sin datos notas')}</div>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Informe de actuacion</h3>
+                    <div class="raw-box">${escapeHtml((a.informeActuacion || []).join('\n') || '-')}</div>
+                </div>
+
+                ${(a.extras && a.extras.length) ? `
+                <div class="detalle-seccion">
+                    <h3>Otros datos Atlas capturados (${a.extras.length})</h3>
+                    <table>
+                        <thead><tr><th>Sección</th><th>Campo</th><th>Valor</th></tr></thead>
+                        <tbody>${extrasFilas}</tbody>
+                    </table>
+                </div>` : ''}
+
+                <div class="detalle-seccion">
+                    <h3>Texto Original Capturado</h3>
+                    <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
+                </div>
+            `;
+        } else if (orden.tipo === 'telco_alta') {
+            const t = orden.telco || {};
+            const bas = t.datosBasicos || {};
+            const cto = t.datosCto || {};
+            const cd = t.datosCd || {};
+            const cont = t.contacto || {};
+
+            document.getElementById('modalTitulo').textContent =
+                `Alta Telco ${t.woCorto || ''} — ${t.titular || 'Cliente'}`;
+
+            const itemsFilas = (t.items || []).map(it => `
+                <tr>
+                    <td><strong>${escapeHtml(it.nombreActivo)}</strong></td>
+                    <td>${escapeHtml(it.tipoAccion)}</td>
+                    <td>${escapeHtml(it.categoria)}</td>
+                </tr>
+            `).join('');
+
+            const trazadoFilas = (t.trazado || []).map(tr => `
+                <tr>
+                    <td>${escapeHtml(tr.recurso)}</td>
+                    <td>${escapeHtml(tr.especificador)}</td>
+                    <td>${escapeHtml(tr.categoria)}</td>
+                    <td class="mono-dato">${escapeHtml(tr.valor)}</td>
+                </tr>
+            `).join('');
+
+            const extrasFilas = (t.extras || []).map(ex => `
+                <tr>
+                    <td><span class="text-small">${escapeHtml(ex.seccion)}</span></td>
+                    <td><strong>${escapeHtml(ex.campo)}</strong></td>
+                    <td class="mono-dato">${escapeHtml(ex.valor)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('modalContenido').innerHTML = `
+                ${bloqueNotas}
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Cabecera y Identificadores</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Orden de trabajo</div><div class="mono-dato">${escapeHtml(t.ordenTrabajo || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Codigo tarea</div><div class="mono-dato">${escapeHtml(t.codigoTarea || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Customer Order</div><div class="mono-dato">${escapeHtml(t.customerOrder || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Fecha</div><div>${escapeHtml(t.fecha || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Telefono alta</div><div><strong>${escapeHtml(t.telefonoAlta || '-')}</strong></div></div>
+                            <div class="kv-item"><div class="text-small">Descripcion CO</div><div>${escapeHtml(t.descripcionCO || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Coordinado</div><div>${escapeHtml(t.coordinado || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Requiere cita</div><div>${escapeHtml(t.requiereCita || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Segmento / Subseg.</div><div>${escapeHtml(t.segmento || '-')} / ${escapeHtml(t.subsegmento || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Marca / Portabilidad</div><div>${escapeHtml(t.marcaComercial || '-')} / ${escapeHtml(t.portabilidad || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Tecnología / Indicador</div><div>${escapeHtml(t.tecnologia || '-')} / ${escapeHtml(t.indicador || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Central</div><div>${escapeHtml(t.central || '-')} · ${escapeHtml(t.centralNombre || '-')}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Cliente, Servicio y Contacto</h3>
+                        <p><strong>Titular:</strong> ${escapeHtml(t.titular || '-')}</p>
+                        <p><strong>Domicilio:</strong> ${escapeHtml(t.domicilio || '-')} — <strong>Población:</strong> ${escapeHtml(t.poblacion || '-')}</p>
+                        <p><strong>Unidad Funcional:</strong> <span class="mono-dato">${escapeHtml(t.unidadFuncional || '-')}</span></p>
+                        <p><strong>Tipo de Trabajo:</strong> ${escapeHtml(t.tipoTrabajo || '-')}</p>
+                        <p><strong>RFS Origen:</strong> ${escapeHtml(t.rfsOrigen || '-')}</p>
+                        <p><strong>RFS Destino:</strong> <span class="mat-tag">${escapeHtml(t.rfsDestino || '-')}</span></p>
+                        <p><strong>Productos Contratados:</strong> ${escapeHtml(t.productosContratados || '-')}</p>
+                        <p><strong>Móvil:</strong> ${escapeHtml(cont.telefonoMovil || '-')} &nbsp;|&nbsp; <strong>Otros tel.:</strong> ${escapeHtml(cont.otrosTelefonos || '-')}</p>
+                        <p><strong>Correo:</strong> <span class="mono-dato">${escapeHtml(cont.correo || '-')}</span></p>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Datos Básicos y Asignación</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">Datos generales asignación</div><div class="mono-dato">${escapeHtml(bas.asignacion || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Id.ONT</div><div class="mono-dato">${escapeHtml(bas.idOnt || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Central Cab.</div><div class="mono-dato">${escapeHtml(bas.centralCab || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">IP estatica</div><div class="mono-dato">${escapeHtml(bas.ipEstatica || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">IUA</div><div class="mono-dato">${escapeHtml(bas.iua || '-')}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Datos CTO y Datos CD</h3>
+                        <div class="kv-grid">
+                            <div class="kv-item"><div class="text-small">CTO Número</div><div class="mono-dato">${escapeHtml(cto.numero || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">CTO Tipo</div><div>${escapeHtml(cto.tipo || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">CTO Puerto</div><div class="mono-dato">${escapeHtml(cto.puerto || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Vert.Comp.</div><div>${escapeHtml(cto.vertComp || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">N. Admin. tercero</div><div>${escapeHtml(cto.numAdminTercero || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Caja operador prop.</div><div>${escapeHtml(cto.operadorPropietario || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Modelo CTO</div><div>${escapeHtml(cto.modelo || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Ubicación CTO</div><div>${escapeHtml(cto.ubicacion || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Tiene CD</div><div>${escapeHtml(cd.tieneCd || '-')}</div></div>
+                            <div class="kv-item"><div class="text-small">Borna</div><div>${escapeHtml(cd.borna || '-')}</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>ITEMS (${(t.items || []).length})</h3>
+                    <table>
+                        <thead><tr><th>Nombre activo</th><th>Tipo de acción</th><th>Categoría</th></tr></thead>
+                        <tbody>${itemsFilas || '<tr><td colspan="3">Sin ítems</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Trazado (${(t.trazado || []).length})</h3>
+                    <table>
+                        <thead><tr><th>Recurso</th><th>Especificador</th><th>Categoría</th><th>Valor</th></tr></thead>
+                        <tbody>${trazadoFilas || '<tr><td colspan="4">Sin datos de trazado</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                ${(t.extras && t.extras.length) ? `
+                <div class="detalle-seccion">
+                    <h3>Campos Adicionales Capturados (${t.extras.length})</h3>
+                    <table>
+                        <thead><tr><th>Sección</th><th>Campo</th><th>Valor</th></tr></thead>
+                        <tbody>${extrasFilas}</tbody>
+                    </table>
+                </div>` : ''}
+
+                <div class="detalle-seccion">
+                    <h3>Texto Original Capturado</h3>
+                    <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
+                </div>
+            `;
+        } else {
+            document.getElementById('modalTitulo').textContent =
+                `Orden Visor ${orden.cliente.orden || ''} — ${orden.cliente.nombre || 'Cliente'}`;
+
+            const equiposFilas = (orden.equipos || []).map(eq => `
+                <tr style="${eq.tieneMaterial ? 'background: rgba(166, 227, 161, 0.08);' : ''}">
+                    <td>${escapeHtml(eq.op)}</td>
+                    <td><strong>${escapeHtml(eq.codigo)}</strong></td>
+                    <td>${escapeHtml(eq.descripcion)}</td>
+                    <td>${escapeHtml(eq.unidades)}</td>
+                    <td>${eq.tieneMaterial
+                        ? `<span class="mat-tag">MAT: ${escapeHtml(eq.material)}</span>`
+                        : `<span class="text-small">Sin material</span>`}</td>
+                </tr>
+            `).join('');
+
+            const clavesFilas = (orden.claves || []).map(c => `
+                <tr>
+                    <td><span class="text-small">${escapeHtml(c.bloque)}</span></td>
+                    <td>${escapeHtml(c.op)}</td>
+                    <td><strong>${escapeHtml(c.clave)}</strong></td>
+                    <td class="mono-dato">${escapeHtml(c.valor)}</td>
+                </tr>
+            `).join('');
+
+            const interesFilas = (orden.datosInteres || []).map(d => `
+                <tr>
+                    <td><strong>${escapeHtml(d.campo)}</strong></td>
+                    <td>${escapeHtml(d.valor || '-')}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('modalContenido').innerHTML = `
+                ${bloqueNotas}
+                <div class="modal-grid">
+                    <div class="detalle-seccion">
+                        <h3>Datos de Cliente</h3>
+                        <p><strong>Nombre / Titular:</strong> ${escapeHtml(orden.cliente.nombre || '-')}</p>
+                        <p><strong>Teléfono:</strong> ${escapeHtml(orden.cliente.telefono || '-')} &nbsp;|&nbsp; <strong>Tel. Contacto:</strong> ${escapeHtml(orden.cliente.telefonoContacto || '-')}</p>
+                        <p><strong>Año:</strong> ${escapeHtml(orden.cliente.anio || '-')} &nbsp;|&nbsp; <strong>Central:</strong> ${escapeHtml(orden.cliente.central || '-')} &nbsp;|&nbsp; <strong>Orden:</strong> ${escapeHtml(orden.cliente.orden || '-')}</p>
+                        <p><strong>Dirección:</strong> ${escapeHtml(orden.cliente.direccion || '-')}</p>
+                        <p><strong>Observaciones:</strong> <span class="mono-dato">${escapeHtml(orden.cliente.observaciones || '-')}</span></p>
+                    </div>
+
+                    <div class="detalle-seccion">
+                        <h3>Datos de Interés</h3>
+                        <table>
+                            <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+                            <tbody>${interesFilas || '<tr><td colspan="2">Sin datos</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Datos de Equipo (Marcados los que tienen código de material)</h3>
+                    <table>
+                        <thead><tr><th>Op</th><th>Equipo</th><th>Descripción</th><th>Ud.</th><th>Material</th></tr></thead>
+                        <tbody>${equiposFilas || '<tr><td colspan="5">Sin equipos</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Datos Clave (${(orden.claves || []).length} claves)</h3>
+                    <table>
+                        <thead><tr><th>Bloque</th><th>Op</th><th>Clave</th><th>Datos clave</th></tr></thead>
+                        <tbody>${clavesFilas || '<tr><td colspan="4">Sin claves</td></tr>'}</tbody>
+                    </table>
+                </div>
+
+                <div class="detalle-seccion">
+                    <h3>Texto Original Capturado</h3>
+                    <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('modalDetalle').classList.add('activo');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalDetalle').classList.remove('activo');
+    }
+
+    function cerrarModalFondo(e) {
+        if (e.target.id === 'modalDetalle') cerrarModal();
+    }
+
     function filtrarOrdenes() {
-        const db = JSON.parse(localStorage.getItem('db_ordenes_v3'));
-        
-        const fCliente = document.getElementById('searchCliente').value.toLowerCase();
-        const fIP = document.getElementById('searchIP').value.trim();
-        const fFecha = document.getElementById('searchFecha').value;
+        const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
         const fTipo = document.getElementById('searchTipo').value;
+        const fCli = document.getElementById('searchCliente').value.toLowerCase().trim();
+        const fOrd = document.getElementById('searchOrden').value.toLowerCase().trim();
+        const fDat = document.getElementById('searchDato').value.toLowerCase().trim();
+        const fFec = document.getElementById('searchFecha').value;
 
-        const filtrados = db.filter(orden => {
-            const cumpleCliente = orden.cliente.nombre.toLowerCase().includes(fCliente) || 
-                                  orden.cliente.nif.toLowerCase().includes(fCliente);
-            
-            // Búsqueda inteligente en las celdas de IP exclusivas
-            const cumpleIP = fIP === "" || 
-                             orden.linea.ipWan.includes(fIP) || 
-                             orden.linea.ipLan.includes(fIP);
-            
-            const cumpleFecha = fFecha === "" || orden.fechaInstalacion === fFecha;
-            const cumpleTipo = fTipo === "" || orden.linea.tipo === fTipo;
+        const filtrados = db.filter(o => {
+            if (fTipo && o.tipo !== fTipo) return false;
 
-            return cumpleCliente && cumpleIP && cumpleFecha && cumpleTipo;
+            const c = o.cliente || {};
+            const t = o.telco || {};
+            const a = o.atlas || {};
+            const s = o.sam || {};
+            const bas = t.datosBasicos || {};
+            const cto = t.datosCto || {};
+            const cont = t.contacto || {};
+
+            const matchCli = !fCli ||
+                (c.nombre || '').toLowerCase().includes(fCli) ||
+                (c.nif || '').toLowerCase().includes(fCli) ||
+                (c.telefono || '').toLowerCase().includes(fCli) ||
+                (c.telefonoContacto || '').toLowerCase().includes(fCli) ||
+                (t.telefonoAlta || '').toLowerCase().includes(fCli) ||
+                (cont.telefonoMovil || '').toLowerCase().includes(fCli) ||
+                (cont.otrosTelefonos || '').toLowerCase().includes(fCli) ||
+                (cont.correo || '').toLowerCase().includes(fCli) ||
+                (a.cliente || '').toLowerCase().includes(fCli) ||
+                (a.opeTit || '').toLowerCase().includes(fCli) ||
+                (s.nombreCliente || '').toLowerCase().includes(fCli) ||
+                (s.dniCif || '').toLowerCase().includes(fCli) ||
+                (s.tel || '').toLowerCase().includes(fCli) ||
+                (s.tfnoContacto || '').toLowerCase().includes(fCli) ||
+                (s.coordinador || '').toLowerCase().includes(fCli) ||
+                (s.obsCliente || '').toLowerCase().includes(fCli);
+
+            const matchOrd = !fOrd ||
+                (c.orden || '').toLowerCase().includes(fOrd) ||
+                (c.central || '').toLowerCase().includes(fOrd) ||
+                (c.anio || '').toLowerCase().includes(fOrd) ||
+                (t.ordenTrabajo || '').toLowerCase().includes(fOrd) ||
+                (t.codigoTarea || '').toLowerCase().includes(fOrd) ||
+                (t.customerOrder || '').toLowerCase().includes(fOrd) ||
+                (t.centralNombre || '').toLowerCase().includes(fOrd) ||
+                (a.numeroOrden || '').toLowerCase().includes(fOrd) ||
+                (a.numeroAdmtvo || '').toLowerCase().includes(fOrd) ||
+                (s.idAveria || '').toLowerCase().includes(fOrd) ||
+                (s.central || '').toLowerCase().includes(fOrd);
+
+            const textoDatos = [
+                o.notaActuacion,
+                c.observaciones,
+                t.descripcionCO,
+                t.tipoTrabajo,
+                t.rfsOrigen,
+                t.rfsDestino,
+                t.unidadFuncional,
+                bas.iua,
+                bas.idOnt,
+                bas.ipEstatica,
+                bas.asignacion,
+                cto.numero,
+                cto.puerto,
+                cto.operadorPropietario,
+                a.tipoOrden,
+                a.estadoOrden,
+                a.obsOrden,
+                a.tCtEspec,
+                a.velocidad,
+                a.locOrigen,
+                a.locDestino,
+                a.dirOrigenCliente,
+                a.dirDestinoCliente,
+                s.sintoma,
+                s.diagnostico,
+                s.repu,
+                s.ssd,
+                s.obsPrueba,
+                s.domicilioPostal,
+                s.areaPlanta,
+                ...(s.logistica || []).map(lg => `${lg.codigo} ${lg.contratable} ${lg.regimen}`),
+                ...(s.asignacionLineas || []),
+                ...(s.trazadoAdslLineas || []),
+                ...(a.equipos || []),
+                ...(a.trazadoCircuito || []),
+                ...(a.catalogoTarjetas || []),
+                ...(a.facilidCable || []),
+                ...(a.facilidGrupo || []),
+                ...(a.terminales || []),
+                ...(a.equiposAbonado || []),
+                ...(a.datosNotas || []),
+                ...(a.informeActuacion || []),
+                ...(o.equipos || []).map(e => `${e.codigo} ${e.descripcion} ${e.material}`),
+                ...(o.claves || []).map(k => `${k.clave} ${k.valor}`),
+                ...(o.datosInteres || []).map(d => `${d.campo} ${d.valor}`),
+                ...(t.items || []).map(it => `${it.nombreActivo} ${it.tipoAccion} ${it.categoria}`),
+                ...(t.trazado || []).map(tr => `${tr.recurso} ${tr.especificador} ${tr.categoria} ${tr.valor}`)
+            ].join(' ').toLowerCase();
+
+            const matchDat = !fDat || textoDatos.includes(fDat);
+            const matchFec = !fFec || o.fecha === fFec || c.fechaFormulacion === fFec || c.fechaEntrada === fFec;
+
+            return matchCli && matchOrd && matchDat && matchFec;
         });
 
         listarOrdenes(filtrados);
     }
 
     function limpiarFiltros() {
-        document.getElementById('searchCliente').value = "";
-        document.getElementById('searchIP').value = "";
-        document.getElementById('searchFecha').value = "";
-        document.getElementById('searchTipo').value = "";
+        document.getElementById('searchTipo').value = '';
+        document.getElementById('searchCliente').value = '';
+        document.getElementById('searchOrden').value = '';
+        document.getElementById('searchDato').value = '';
+        document.getElementById('searchFecha').value = '';
         listarOrdenes();
     }
 
     function borrarTodaLaBD() {
-        if(confirm("¿Seguro que deseas reiniciar las tablas locales?")) {
-            localStorage.setItem('db_ordenes_v3', JSON.stringify([]));
+        if (confirm('¿Borrar todos los registros guardados en este navegador?')) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
             listarOrdenes();
         }
     }
 </script>
-
 </body>
 </html>
