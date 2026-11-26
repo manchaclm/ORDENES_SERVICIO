@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ordenes-v3';
+const CACHE_NAME = 'ordenes-v1';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
