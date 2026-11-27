@@ -109,13 +109,6 @@
             font-size: 0.8rem;
         }
 
-        .fila-acciones-top {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
         .filtros-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -360,53 +353,66 @@
         }
 
         @media print {
-            body.imprimiendo-orden > :not(#modalDetalle) {
+            body > :not(#modalDetalle) {
                 display: none !important;
             }
 
-            body.imprimiendo-orden {
-                background-color: #ffffff !important;
+            html, body {
+                background: #ffffff !important;
                 color: #111111 !important;
+                margin: 0 !important;
                 padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
             }
 
+            #modalDetalle,
             #modalDetalle.activo {
                 position: static !important;
+                display: block !important;
                 background: #ffffff !important;
                 padding: 0 !important;
+                margin: 0 !important;
                 overflow: visible !important;
+                inset: auto !important;
             }
 
             .modal-caja {
                 max-width: 100% !important;
                 margin: 0 !important;
-                background-color: #ffffff !important;
+                background: #ffffff !important;
                 color: #111111 !important;
                 border: none !important;
                 padding: 8px !important;
+                box-shadow: none !important;
             }
 
             .modal-botones,
-            .no-imprimir {
+            .no-imprimir,
+            .seccion-texto-original {
                 display: none !important;
             }
 
             .detalle-seccion,
-            .kv-item,
-            .raw-box {
-                background-color: #ffffff !important;
+            .kv-item {
+                background: #ffffff !important;
                 color: #111111 !important;
                 border-color: #cccccc !important;
-                max-height: none !important;
-                overflow: visible !important;
+                break-inside: avoid;
             }
 
             .modal-cabecera h2,
             .detalle-seccion h3,
             .text-small,
             .mono-dato,
-            .mat-tag {
+            .mat-tag,
+            td, th, p, div {
                 color: #111111 !important;
+            }
+
+            .mat-tag {
+                background: #f0f0f0 !important;
+                border-color: #999999 !important;
             }
         }
     </style>
@@ -477,6 +483,7 @@
 
     <script>
         const STORAGE_KEY = 'db_ordenes_visor_v1';
+        let ordenActualModalId = null;
 
         if (!localStorage.getItem(STORAGE_KEY)) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
@@ -485,10 +492,6 @@
         window.onload = function () {
             listarOrdenes();
         };
-
-        window.addEventListener('afterprint', function () {
-            document.body.classList.remove('imprimiendo-orden');
-        });
 
         function obtenerFechaCapturaIso() {
             const ahora = new Date();
@@ -520,22 +523,91 @@
             filtrarOrdenes();
         }
 
-        function imprimirOrdenActual() {
-            document.body.classList.add('imprimiendo-orden');
-            window.print();
-            setTimeout(() => {
-                document.body.classList.remove('imprimiendo-orden');
-            }, 1000);
+        function limpiarNombreArchivoPdf(texto) {
+            return String(texto || 'orden')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^A-Za-z0-9_-]+/g, '_')
+                .replace(/^_+|_+$/g, '')
+                .slice(0, 60) || 'orden';
         }
 
-        function imprimirOrdenDirecta(id, event = null) {
+        function imprimirOrdenPorId(id, event = null) {
             if (event) {
                 event.stopPropagation();
             }
-            abrirModalOrden(id);
+            const db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const orden = db.find(o => o.id === id) || db.find(o => o.id === ordenActualModalId);
+            if (!orden) return;
+
+            const ref = orden.cliente?.orden || orden.telco?.woCorto || orden.atlas?.numeroOrden || orden.sam?.idAveria || orden.id;
+            const cliente = orden.cliente?.nombre || orden.telco?.titular || orden.atlas?.cliente || orden.sam?.nombreCliente || '';
+            const tituloDoc = limpiarNombreArchivoPdf(`Orden_${ref}_${cliente}`);
+
+            const tituloAnterior = document.title;
+            document.title = tituloDoc;
+
+            // Abrimos el modal si no estaba abierto para que su contenido esté listo
+            if (!document.getElementById('modalDetalle').classList.contains('activo') || ordenActualModalId !== orden.id) {
+                abrirModalOrden(orden.id);
+            }
+
+            // Sincronizamos el valor actual del textarea de notas antes de imprimir
+            const notaModal = document.getElementById('modal-nota-textarea');
+            const notaTabla = document.getElementById(`nota-input-${orden.id}`);
+            const textoNota = notaModal ? notaModal.value : (notaTabla ? notaTabla.value : (orden.notaActuacion || ''));
+
+            const cajaImpresion = document.createElement('div');
+            cajaImpresion.id = 'vistaImpresionDedica';
+            cajaImpresion.style.cssText = 'position:fixed;inset:0;background:#fff;color:#111;padding:20px;z-index:99999;overflow:auto;font-family:system-ui,-apple-system,sans-serif;';
+
+            const contenidoClonado = document.getElementById('modalContenido').cloneNode(true);
+            contenidoClonado.querySelectorAll('.seccion-texto-original, .no-imprimir').forEach(el => el.remove());
+
+            // Sustituimos el textarea por texto plano para que salga completo al imprimir o exportar a PDF
+            const taClon = contenidoClonado.querySelector('#modal-nota-textarea');
+            if (taClon) {
+                const divNota = document.createElement('div');
+                divNota.style.cssText = 'padding:8px 10px;border:1px solid #bbb;border-radius:6px;white-space:pre-wrap;background:#fafafa;color:#111;';
+                divNota.textContent = textoNota.trim() ? textoNota : 'Sin notas de actuación.';
+                taClon.replaceWith(divNota);
+            }
+
+            const cabeceraPrint = document.createElement('div');
+            cabeceraPrint.style.cssText = 'display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #222;padding-bottom:10px;margin-bottom:14px;';
+            const h2Print = document.createElement('h2');
+            h2Print.style.cssText = 'margin:0;font-size:1.2rem;color:#111;';
+            h2Print.textContent = document.getElementById('modalTitulo').textContent;
+
+            const btnCerrarPrint = document.createElement('button');
+            btnCerrarPrint.type = 'button';
+            btnCerrarPrint.textContent = 'Volver';
+            btnCerrarPrint.style.cssText = 'background:#222;color:#fff;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;';
+
+            const restaurarTrasImprimir = () => {
+                if (cajaImpresion.parentNode) {
+                    cajaImpresion.parentNode.removeChild(cajaImpresion);
+                }
+                document.title = tituloAnterior;
+            };
+
+            btnCerrarPrint.onclick = restaurarTrasImprimir;
+            cabeceraPrint.appendChild(h2Print);
+            cabeceraPrint.appendChild(btnCerrarPrint);
+            cajaImpresion.appendChild(cabeceraPrint);
+            cajaImpresion.appendChild(contenidoClonado);
+            document.body.appendChild(cajaImpresion);
+
+            window.addEventListener('afterprint', restaurarTrasImprimir, { once: true });
+
             setTimeout(() => {
-                imprimirOrdenActual();
-            }, 60);
+                try {
+                    window.print();
+                } catch (e) {
+                    restaurarTrasImprimir();
+                    alert('No se pudo abrir el diálogo de impresión: ' + e.message);
+                }
+            }, 80);
         }
 
         function exportarBD() {
@@ -1614,7 +1686,7 @@
                     <textarea class="nota-input-fila" id="nota-input-${escapeHtml(orden.id)}" placeholder="Escribe qué se ha hecho en esta actuación...">${escapeHtml(notaActual)}</textarea>
                     <div class="nota-acciones-fila">
                         <button type="button" class="btn-success btn-sm" onclick="guardarNotaActuacion('${escapeHtml(orden.id)}', document.getElementById('nota-input-${escapeHtml(orden.id)}').value, 'tabla')">Guardar Nota</button>
-                        <button type="button" class="btn-secondary btn-sm" onclick="imprimirOrdenDirecta('${escapeHtml(orden.id)}', event)">Imprimir</button>
+                        <button type="button" class="btn-secondary btn-sm" onclick="imprimirOrdenPorId('${escapeHtml(orden.id)}', event)">Imprimir</button>
                         <button type="button" class="btn-danger btn-sm" onclick="eliminarOrden('${escapeHtml(orden.id)}', event, false)">Eliminar</button>
                         <span class="estado-guardado" id="nota-estado-${escapeHtml(orden.id)}">${fechaNota}</span>
                     </div>
@@ -1637,9 +1709,18 @@
             `;
         }
 
+        function renderBloqueTextoOriginal(orden) {
+            return `
+                <div class="detalle-seccion seccion-texto-original">
+                    <h3>Texto Original Capturado</h3>
+                    <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
+                </div>
+            `;
+        }
+
         function configurarBotonesModal(id) {
             document.getElementById('modalBotones').innerHTML = `
-                <button type="button" class="btn-success" onclick="imprimirOrdenActual()">Imprimir</button>
+                <button type="button" class="btn-success" onclick="imprimirOrdenPorId('${escapeHtml(id)}', event)">Imprimir</button>
                 <button type="button" class="btn-danger" onclick="eliminarOrden('${escapeHtml(id)}', event, true)">Eliminar Registro</button>
                 <button type="button" class="btn-secondary" onclick="cerrarModal()">Cerrar</button>
             `;
@@ -1864,8 +1945,10 @@
             const orden = db.find(o => o.id === id);
             if (!orden) return;
 
+            ordenActualModalId = orden.id;
             configurarBotonesModal(orden.id);
             const bloqueNotas = renderBloqueNotasModal(orden);
+            const bloqueRaw = renderBloqueTextoOriginal(orden);
 
             if (orden.tipo === 'sam_averia') {
                 const s = orden.sam || {};
@@ -1913,10 +1996,7 @@
                         </div>
                     </div>
 
-                    <div class="detalle-seccion">
-                        <h3>Texto Original Capturado</h3>
-                        <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
-                    </div>
+                    ${bloqueRaw}
                 `;
             } else if (orden.tipo === 'atlas') {
                 const a = orden.atlas || {};
@@ -2032,10 +2112,7 @@
                         </table>
                     </div>` : ''}
 
-                    <div class="detalle-seccion">
-                        <h3>Texto Original Capturado</h3>
-                        <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
-                    </div>
+                    ${bloqueRaw}
                 `;
             } else if (orden.tipo === 'telco_alta') {
                 const t = orden.telco || {};
@@ -2162,10 +2239,7 @@
                         </table>
                     </div>` : ''}
 
-                    <div class="detalle-seccion">
-                        <h3>Texto Original Capturado</h3>
-                        <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
-                    </div>
+                    ${bloqueRaw}
                 `;
             } else {
                 document.getElementById('modalTitulo').textContent =
@@ -2238,10 +2312,7 @@
                         </table>
                     </div>
 
-                    <div class="detalle-seccion">
-                        <h3>Texto Original Capturado</h3>
-                        <div class="raw-box">${escapeHtml(orden.rawTexto || '')}</div>
-                    </div>
+                    ${bloqueRaw}
                 `;
             }
 
@@ -2249,7 +2320,7 @@
         }
 
         function cerrarModal() {
-            document.body.classList.remove('imprimiendo-orden');
+            ordenActualModalId = null;
             document.getElementById('modalDetalle').classList.remove('activo');
         }
 
